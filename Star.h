@@ -60,6 +60,8 @@ public:
     getPosSph();
     vector<double>
     getVelSph();
+    bool
+    isBound(double Geff, double host_M, double a_s);
 // Setters
     void
     setTime(double t) { time = t; }

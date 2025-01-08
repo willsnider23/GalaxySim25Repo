@@ -1,4 +1,4 @@
-// Copyright 2023 Will Snider
+// Copyright 2025 Will Snider
 
 #include <iostream>
 #include <string>
@@ -40,6 +40,13 @@ private:
     typedef std::chrono::duration<double, std::ratio<1> > second_;
     std::chrono::time_point<clock_> beg_;
 };
+
+double
+vectorMag(vector<double>& vec) {
+    double mag = 0;
+    for (double val : vec) { mag += pow(val, 2); }
+    return sqrt(mag);
+}
 
 void
 getModelStats(Model& stats) {
@@ -139,6 +146,21 @@ printInitConds(Model& modelStats) {
 }
 
 void
+printTides(double time, Galaxy& g, vector<Star>& pop) {
+    if (time == 0) settings::tidal << g.getRTidal() << endl;
+
+    double r_tidal_exp = 0;
+    for (int i = 0; i < settings::N; i++) {
+        if (pop[i].isBound(g.getGeff(), g.getHostMass(), g.getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0))) {
+            vector<double> pos = pop[i].getPos();
+            double r = vectorMag(pos);
+            if (r > r_tidal_exp) r_tidal_exp = r;
+        }
+    }
+    settings::tidal << time << "\t" << r_tidal_exp << endl;
+}
+
+void
 output(Galaxy& g, ofstream& outFile, double time) {
    if (settings::format != 1) {
         outFile << time << "\t" << settings::N << "\t" << g.getRHalf();
@@ -148,8 +170,10 @@ output(Galaxy& g, ofstream& outFile, double time) {
         }
         outFile << endl;
     }
+
     if (!g.isUniformTime()) // must integrate all stars to same time for output
         g.wrangleStars(time);
+
     vector<Star> pop = g.getPopulation();
     for (int i = 0; i < settings::N; i++) {
         outFile << pop[i].getID() << "\t";
@@ -167,6 +191,8 @@ output(Galaxy& g, ofstream& outFile, double time) {
         }
         outFile << endl;
     }
+
+    if (settings::trackTidalR) printTides(time, g, pop);
 }
 
 Star&

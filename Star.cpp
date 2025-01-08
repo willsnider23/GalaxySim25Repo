@@ -212,6 +212,14 @@ Star::getVelSph() {
     return {v_rho, v_phi, v_theta};
 }
 
+bool
+Star::isBound(double G_eff, double host_M, double a_s) {
+    double r = calcMag(positionMatrix[0]);
+    double v = calcMag(positionMatrix[1]);
+    double v_esc = sqrt(2 * G_eff * host_M) / pow(pow(r, 2) + pow(a_s, 2), 0.25); // from Bob & Alice with G_eff
+    return v < v_esc;
+}
+
 // Setters
 // Mutators
 

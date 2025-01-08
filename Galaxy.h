@@ -54,6 +54,8 @@ public:
     isUniformTime();
     double
     calcAnisotropyFactor();
+    double
+    getGeff();
 // Setters
     void
     setPopulation(vector<Star> pop) { population = pop; }

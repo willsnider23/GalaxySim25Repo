@@ -32,6 +32,7 @@ Galaxy::Galaxy(Model& model) {
         calcCOM();
 }
 
+// Getters
 Star&
 Galaxy::getStar(int ID) {
     if (ID < static_cast<int>(population.size()))
@@ -79,6 +80,17 @@ Galaxy::calcAnisotropyFactor() {
     return 1 - (sigma2_t / sigma2_r);
 }
 
+// G_eff from external field mag at r_half for v_esc
+double
+Galaxy::getGeff() {
+    double re = r_half - host_R;
+    double gne = re * consts::G * host_M / pow(re, 3);
+    double nu = 1.0 / (1.0 - exp(-sqrt(gne / consts::a_mond)));
+    double ge = nu * gne;
+    return consts::a_mond * consts::G / ge;
+}
+
+// Mutators
 void
 Galaxy::calcCOM() {
     vector<double> sumR = { 0, 0, 0 }, sumV = { 0, 0, 0 };
