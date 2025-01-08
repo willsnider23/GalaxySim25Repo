@@ -23,7 +23,7 @@ using Model = unordered_map<string, double>;
 class Galaxy {
     vector<Star> population;
     double baryonCloudMass;
-    double r_half, a_s;
+    double r_half, a_s, r_tidal;
     double host_R, host_M;
     PosMat centerOfMass = { {}, {} };
 
@@ -36,6 +36,8 @@ public:
     getMass() { return baryonCloudMass; }
     double
     getRHalf() { return r_half; }
+    double
+    getRTidal() { return r_tidal; }
     double
     getHostDist() { return host_R; }
     double 

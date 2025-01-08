@@ -20,6 +20,7 @@ Galaxy::Galaxy(Model& model) {
         baryonCloudMass = model["mass"];
         r_half = model["r_half"];
         a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
+        r_tidal = model["r_tidal"];
         if (settings::EFE) { 
             host_R = model["R_mw"]; 
             host_M = model["M_mw"];
