@@ -30,7 +30,7 @@ namespace settings {
     const bool g_ratios = false;             // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
-    const bool plCir = true;                // planar circular orbits in xy plane (only works for Newtonian)
+    const bool plCir = false;                // planar circular orbits in xy plane (only works for Newtonian)
     const double uniform_r = -1;           // stars initialized with same radius  
     const double uniform_phi = -1;          // stars initialized with same phi, use with plCir
     const double lin_dist_r = -1;           // stars radius dispersed evenly (to given max radius)

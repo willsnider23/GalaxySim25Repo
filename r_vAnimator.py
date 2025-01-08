@@ -34,7 +34,7 @@ L=visual.label(text = str(0) , pos=(0, -7000, 0), height = 20, color=visual.colo
 #Main Program#
 linenum = 1
 line = " "
-f = open("results_weird.txt", "r")
+f = open("results.txt", "r")
 # Until the end of the file, read line by line and process based on placement in output blocks
 while line != "end":
     line = f.readline()

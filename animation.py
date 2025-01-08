@@ -28,7 +28,7 @@ ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=2000, thickness=4, color=vi
 #Main Program#
 linenum = 1
 line = " "
-f = open("./results.txt", "r")
+f = open("results.txt", "r")
 # Until the end of the file, read line by line and process based on placement in output blocks
 while line != "end":
     line = f.readline()
