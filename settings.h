@@ -9,6 +9,8 @@
 #include <random>
 #include <chrono>
 #include <math.h>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -16,12 +18,12 @@ namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
     const int N = 25;                       // Number of bodies in the simulation
-    const double Tmax = 2000;               // Runtime in My
+    const double Tmax = 1000;               // Runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
-    const int consoleWrites = floor(sqrt(25+pow(Tmax/10,2)));  // Number of console writes (for efficiency)                  
-    const int bins = floor(sqrt(N));        // Groups for dispersion profile averages
+    const double consoleWrites = floor(sqrt(25+pow(Tmax/10,2)));  // Number of console writes (for efficiency)                  
+    const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
 
     /* Switches
@@ -51,7 +53,6 @@ namespace settings {
     // Output Control
     const string simOutput = "results.txt";
     const string dispOutput = "disp_dat.txt";
-    const ofstream& tidal("tidalR.txt");
     const bool run_dispersion = false;
     const bool pos_out = true, vel_out = false, acc_out = false;
         /* Format Options :

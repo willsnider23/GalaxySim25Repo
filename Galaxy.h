@@ -1,4 +1,4 @@
-// Copyright 2023 Will Snider
+// Copyright 2025 Will Snider
 
 #pragma once
 #ifndef GALAXY_HELPER_H
@@ -33,29 +33,29 @@ public:
 
 // Getters
     double
-    getMass() { return baryonCloudMass; }
+    getMass() const { return baryonCloudMass; }
     double
-    getRHalf() { return r_half; }
+    getRHalf() const { return r_half; }
     double
-    getRTidal() { return r_tidal; }
+    getRTidal() const { return r_tidal; }
     double
-    getHostDist() { return host_R; }
+    getHostDist() const { return host_R; }
     double 
-    getHostMass() { return host_M; }
+    getHostMass() const { return host_M; }
     Star&
     getStar(int ID);
     vector<Star>&
     getPopulation() { return population; }
     int
-    getSize() { return population.size(); }
+    getSize() const { return (int)population.size(); }
     PosMat&
     getCOM() { return centerOfMass; }
     bool
-    isUniformTime();
+    isUniformTime() const;
     double
     calcAnisotropyFactor();
     double
-    getGeff();
+    getGeff() const;
 // Setters
     void
     setPopulation(vector<Star> pop) { population = pop; }
@@ -65,7 +65,7 @@ public:
     void
     wrangleStars(double time);
     void
-    HITS(Star& s,double time);
+    HITS(Star& s,double time) const;
 };
  
 #endif

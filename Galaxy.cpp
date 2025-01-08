@@ -42,7 +42,7 @@ Galaxy::getStar(int ID) {
 }
 
 bool
-Galaxy::isUniformTime() {
+Galaxy::isUniformTime() const {
     double time = population[0].getTime();
     for (Star s : population) {
         if (s.getTime() > time + settings::minstep ||
@@ -82,7 +82,7 @@ Galaxy::calcAnisotropyFactor() {
 
 // G_eff from external field mag at r_half for v_esc
 double
-Galaxy::getGeff() {
+Galaxy::getGeff() const {
     double re = r_half - host_R;
     double gne = re * consts::G * host_M / pow(re, 3);
     double nu = 1.0 / (1.0 - exp(-sqrt(gne / consts::a_mond)));
@@ -117,7 +117,7 @@ Galaxy::wrangleStars(double time) {
 }
 
 void
-Galaxy::HITS(Star& s, double time) {
+Galaxy::HITS(Star& s, double time) const {
     if (s.getAfterTimestep() > time) {
         s.predict(time - s.getTime());
         s.a_and_adot(r_half, baryonCloudMass, host_R, host_M, true);

@@ -146,10 +146,11 @@ printInitConds(Model& modelStats) {
 }
 
 void
-printTides(double time, Galaxy& g, vector<Star>& pop) {
-    if (time == 0) settings::tidal << g.getRTidal() << endl;
+printTides(double time, Galaxy& g, vector<vector<double>>& out) {
+    if (time == 0) out.push_back({ g.getRTidal() });
 
     double r_tidal_exp = 0;
+    vector<Star>& pop = g.getPopulation();
     for (int i = 0; i < settings::N; i++) {
         if (pop[i].isBound(g.getGeff(), g.getHostMass(), g.getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0))) {
             vector<double> pos = pop[i].getPos();
@@ -157,7 +158,7 @@ printTides(double time, Galaxy& g, vector<Star>& pop) {
             if (r > r_tidal_exp) r_tidal_exp = r;
         }
     }
-    settings::tidal << time << "\t" << r_tidal_exp << endl;
+    out.push_back({ time, r_tidal_exp });
 }
 
 void
@@ -191,15 +192,13 @@ output(Galaxy& g, ofstream& outFile, double time) {
         }
         outFile << endl;
     }
-
-    if (settings::trackTidalR) printTides(time, g, pop);
 }
 
 Star&
 minTimeStar(Galaxy& g) {
     vector<Star>& pop = g.getPopulation();
     double timeMin = pop[0].getAfterTimestep();
-    int minIdx = 0;
+    size_t minIdx = 0;
     for (size_t i = 1; i < pop.size(); i++) {
         double t = pop[i].getAfterTimestep();
         if (t < timeMin) {
@@ -216,7 +215,7 @@ makeProjection(ifstream& read) {
     string line, Time, skip, ID;
     string X, Y, Z, VX, VY, VZ; // , ax, ay, az;
     double x, y, z, vx, vy, vz;
-    double time, r, perp_r, v_rad;
+    double r, perp_r, v_rad;
 
     PairList projection = {};
     getline(read, line);
@@ -253,10 +252,10 @@ makeProjection(ifstream& read) {
 PairList
 binDispersion(PairList& projection) {
     PairList profile = {};
-    for (int i = 0; i < settings::bins; i++) {
+    for (double i = 0; i < settings::bins; i++) {
         double r_sum = 0, v_sum = 0, v2_sum = 0;
-        for (int star = 0; star < settings::bins; star++) {
-            int id = settings::bins * i + star;
+        for (double star = 0; star < settings::bins; star++) {
+            double id = settings::bins * i + star;
             r_sum += projection[id][0];
             v_sum += projection[id][1];
             v2_sum += pow(projection[id][1], 2);
@@ -363,7 +362,6 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 */
 
 int main(int argc, char* argv[]) {
-       Timer timer;
         // Initialize galaxy with given parameters
         Model modelStats;
         if (!settings::g_ratios)
@@ -375,9 +373,12 @@ int main(int argc, char* argv[]) {
         Galaxy dsph(modelStats);
         cout << "\nSuccessfully initialized galaxy\n" << endl;
         ofstream outFile(settings::simOutput);
+        vector<vector<double>> tideOutput = {};
 
+        Timer timer;
         double time = 0;
         output(dsph, outFile, time);  // Output initial positions
+        if (settings::trackTidalR) printTides(time, dsph, tideOutput);
         // cout << "Initial anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
         int outputCount = 1; // tracks outputs for calculating output times
         // Begin integration loop
@@ -390,6 +391,7 @@ int main(int argc, char* argv[]) {
             if (time >= outputCount * settings::outputTime) {
                 if (settings::CenterOfMass) dsph.calcCOM();
                 output(dsph, outFile, time);
+                if (settings::trackTidalR) printTides(time, dsph, tideOutput);
                 // Check if time to write to console
                 int timePerWrite = settings::Tmax / settings::consoleWrites;
                 if (outputCount % timePerWrite == 0) {
@@ -420,6 +422,12 @@ int main(int argc, char* argv[]) {
             }
             else
                 cout << "Unable to calculate dispersion profile without recorded positions and velocities" << endl;
+        }
+        if (settings::trackTidalR) {
+            ofstream tidal("tidalR.txt");
+            tidal << tideOutput[0][0] << endl;
+            for (int i = 1; i < tideOutput.size(); i++) 
+                tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
         }
 }
 /////////////////////////   End of Real Code    ////////////////////////////////

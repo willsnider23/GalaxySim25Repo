@@ -35,15 +35,15 @@ public:
     Star(int idx, double r_half, double cloudMass, double hostR, double hostM, vector<double> initR, vector<double> initV);
 // Getters
     int
-    getID() { return ID; }
+    getID() const { return ID; }
     double
-    getTime() { return time;}
+    getTime() const { return time;}
     double
-    getTimestep() { return timestep; }
+    getTimestep() const { return timestep; }
     double
-    getAfterTimestep() { return time + timestep; }
+    getAfterTimestep() const { return time + timestep; }
     vector<double> 
-    getPos() { return positionMatrix[0];}
+    getPos() const { return positionMatrix[0];}
     vector<double> 
     getVel() { return positionMatrix[1]; }
     vector<double>
