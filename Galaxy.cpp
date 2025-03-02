@@ -112,7 +112,8 @@ Galaxy::calcCOM() {
 void
 Galaxy::wrangleStars(double time) {
     for (Star& s : population) {
-        this->HITS(s, time);
+        if (!s.isFrozen())
+            this->HITS(s, time);
     }
 }
 
