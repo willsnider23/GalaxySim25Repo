@@ -28,6 +28,7 @@ Star {
     vector<vector<double>> log;
     double time, timestep;
     int ID, mass = 1;
+    bool frozen = false;
 
 public:
 // Constuctor
@@ -62,6 +63,8 @@ public:
     getVelSph();
     bool
     isBound(double Geff, double host_M, double a_s);
+    bool 
+    isFrozen() const { return frozen ? true : false; }
 // Setters
     void
     setTime(double t) { time = t; }

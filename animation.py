@@ -11,9 +11,11 @@ datarray = []   #2D array to store all position values, used to update body posi
 time = 0        #Time of current output section
 Nbod = []       #List of bodies used by visualpython to draw animation frames
 outputNum = 0   #Counter tracking which output section is being read
+bound = []
+unbound = []
 
 #Visual#
-scene = visual.display(title='Newton',x=0,y=0,width=800,height=1050,range=2500,autoscale=0,userspin = True,ambient=visual.color.gray(.4)) #change x location to width/n
+scene = visual.display(title='Newton',x=0,y=0,width=800,height=1050,range=2500,autoscale=1,userspin = True,ambient=visual.color.gray(.4)) #change x location to width/n
 #rod = visual.cylinder(pos=(0,0,-300), axis=(0,0,600), radius=1, color=visual.color.yellow)
 rod = visual.cylinder(pos=(0,0,0), axis=(1500,0,0), radius=10, color=visual.color.yellow)
 rod = visual.cylinder(pos=(0,0,0), axis=(0,1500,0), radius=10, color=visual.color.orange)
@@ -23,6 +25,8 @@ ring = visual.ring(pos=(0,0,0), axis=(0,0,1), radius=1000, thickness=4, color=vi
 ring = visual.ring(pos=(0,0,0), axis=(0,0,1), radius=2000, thickness=4, color=visual.color.red)
 ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=1000, thickness=4, color=visual.color.blue)
 ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=2000, thickness=4, color=visual.color.red)
+#ring = visual.ring(pos=(2000,0,0), axis=(0,0,1), radius=500, thickness=25, color=visual.color.white)
+#ring = visual.ring(pos=(2000,0,0), axis=(0,1,0), radius=500, thickness=25, color=visual.color.white)
 # L=visual.label(text = ' ' , pos=(0, -1100, 0), height = 10, color=visual.color.yellow)
 
 #Main Program#
@@ -32,7 +36,7 @@ f = open("results.txt", "r")
 # Until the end of the file, read line by line and process based on placement in output blocks
 while line != "end":
     line = f.readline()
-    visual.rate(20000)
+    visual.rate(10000)
     values=line.split()
     # At the start of each output block, update the display time and the number of bodies, N
     # then increment the outputHead tracker
@@ -49,12 +53,19 @@ while line != "end":
         positions.append(float(values[3]))
         datarray.append(positions)
         if outputNum == 1:
-            Nbod.append(visual.sphere(pos=(positions[0],positions[1],positions[2]),radius=20,color=(1,1,1),make_trail=1,retain=1000))
+            Nbod.append(visual.sphere(pos=(positions[0],positions[1],positions[2]),radius=20,color=(1,1,1),make_trail=1,retain=100))
+        if (values[4] == 'b'):
+            bound.append(float(values[0]))
+        elif (values[4] == 'u'):
+            unbound.append(float(values[0]))
         positions = []
     #Before the start of a new output section, take all bodies and update their positions based on datarray values
     if linenum == outputHead - 1:
         for i in range(N):
             Nbod[i].pos=(datarray[i][0],datarray[i][1],datarray[i][2])
-            #Nbod[i].color=(.5*datarray[i][0],.5,0)
+            if (i in bound):
+                Nbod[i].color=(1,1,1)
+            elif (i in unbound):
+                Nbod[i].color=(1,0,0)
         datarray = []
     linenum = linenum + 1

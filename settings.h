@@ -17,8 +17,8 @@ using namespace std;
 namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
-    const int N = 25;                       // Number of bodies in the simulation
-    const double Tmax = 1000;               // Runtime in My
+    const int N = 100;                       // Number of bodies in the simulation
+    const double Tmax = 5000;               // Runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
@@ -30,7 +30,7 @@ namespace settings {
             dooubles: off = -1
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
-    const bool g_ratios = true;             // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
+    const bool g_ratios = false;             // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
     const bool plCir = false;                // planar circular orbits in xy plane (only works for Newtonian)
@@ -41,10 +41,12 @@ namespace settings {
     const bool CenterOfMass = false;         // tracks center of mass position 
     const bool blackHole = false;           // include central blackhole with mass mBlack
         const double mBlack = 1e6;          // mass of central blackhole
-    const bool MOND = false;                // Modified Newtonian Dymanics switch
-    const bool EFE = true;                 // External Field Effect switch
+    const bool MOND = true;                // Modified Newtonian Dymanics switch
+    const bool EFE = false;                 // External Field Effect switch
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
-    const bool trackTidalR = true;          // records pos mag of furthest bound star at every output
+    const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
+    const bool freezeStrays = false;         // fixes problematic stars in space with zero velocity
+        const double freezeR = 5e4;         // Dist from host when stars freeze - 50 kpc
 
     // Dispersion Controls
     const int axis = 1;                     // Viewing Axis: 1 = x, 2 = y, 3 = z
@@ -54,9 +56,9 @@ namespace settings {
     const string simOutput = "results.txt";
     const string dispOutput = "disp_dat.txt";
     const bool run_dispersion = false;
-    const bool pos_out = true, vel_out = false, acc_out = false;
+    const bool pos_out = true, vel_out = true, acc_out = false;
         /* Format Options :
-        *   0 = Animation [time N / ID x y z...]
+        *   0 = Animation [time N r_half / ID x y z...]
         *   1 = Statistics [ID x y z / ...]
         *   2 = Animation w/ COM [time N COM / ID x y z...]
         *   3 = COM r and v [time x y z vx vy vz / ...]

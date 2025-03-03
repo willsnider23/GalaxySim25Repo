@@ -531,6 +531,13 @@ Star::updateStar(double rhalf, double gMass, double hostR, double hostM) {
     this->correct(timestep);
     // Update time to after timestep, give update star new timestep
     this->incrementTime();
+
+    if (settings::freezeStrays) {
+        vector<double> posFromHost = { positionMatrix[0][0] - hostR, positionMatrix[0][1], positionMatrix[0][2] };
+        double distFromHost = calcMag(posFromHost);
+        if (distFromHost <= settings::freezeR) this->frozen = true;
+    }
+
     return this->getAfterTimestep();
 }
 

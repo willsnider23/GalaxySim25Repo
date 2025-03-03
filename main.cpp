@@ -117,6 +117,10 @@ printInitConds(Model& modelStats) {
     cout << "Mass % Limit: \t" << settings::massPerc << endl;
     cout << "Runtime: \t" << (settings::Tmax) / 1000 << " billion years" << endl;
     cout << "Switches:" << endl;
+    cout << "\tPrinting: ";
+        settings::pos_out ? cout << "\tpos" : cout << " ";
+        settings::vel_out ? cout << "\tvel" : cout << " ";
+        settings::acc_out ? cout << "\tacc" << endl : cout << " " << endl;
     if (settings::plCir) cout << "\tPlanar Circular Orbits: \tON" << endl;
     if (settings::uniform_r != -1) cout << "\tUniform R: \t" << settings::uniform_r << " pc" << endl;
     if (settings::uniform_phi != -1) cout << "\tUniform Phi: \t" << settings::uniform_phi << " rad" << endl;
@@ -190,6 +194,14 @@ output(Galaxy& g, ofstream& outFile, double time) {
             vector<double> acc = pop[i].getAcc();
             outFile << acc[0] << "\t" << acc[1] << "\t" << acc[2] << "\t";
         }
+        if (pop[i].isBound(g.getGeff(), g.getMass(), g.getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0)))
+            outFile << "b" << "\t";
+        else
+            outFile << "u" << "\t";
+        if (pop[i].isFrozen())
+            outFile << "f" << "\t";
+        else
+            outFile << "m" << "\t";
         outFile << endl;
     }
 }
@@ -201,6 +213,7 @@ minTimeStar(Galaxy& g) {
     size_t minIdx = 0;
     for (size_t i = 1; i < pop.size(); i++) {
         double t = pop[i].getAfterTimestep();
+        if (settings::freezeStrays && pop[i].isFrozen()) continue;
         if (t < timeMin) {
             timeMin = t;
             minIdx = i;
