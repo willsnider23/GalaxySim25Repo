@@ -124,7 +124,7 @@ Galaxy::calcSkewness() {
     double P_ninety = posList[floor(posList.size() * 0.9)];
 
     // Kelly's Coefficient of Skewness
-    double SK = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
+    skewness = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
 }
 
 void
