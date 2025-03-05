@@ -109,6 +109,11 @@ Galaxy::calcCOM() {
     centerOfMass[1] = { sumV[0] / settings::N, sumV[1] / settings::N, sumV[2] / settings::N };
 }
 
+void 
+Galaxy::calcSkewness() {
+
+}
+
 void
 Galaxy::wrangleStars(double time) {
     for (Star& s : population) {

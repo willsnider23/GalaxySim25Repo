@@ -63,6 +63,8 @@ public:
     void
     calcCOM();
     void
+    calcSkewness();
+    void
     wrangleStars(double time);
     void
     HITS(Star& s,double time) const;
