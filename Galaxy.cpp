@@ -111,7 +111,12 @@ Galaxy::calcCOM() {
 
 void 
 Galaxy::calcSkewness() {
-
+    // get list of all x-positions in population
+    vector<double> posList;
+    for (Star& s : population) {
+        posList.push_back(s.getPos()[0]);
+    }
+    sort(posList.begin(), posList.end());
 }
 
 void
