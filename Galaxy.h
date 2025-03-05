@@ -51,6 +51,8 @@ public:
     getSize() const { return (int)population.size(); }
     PosMat&
     getCOM() { return centerOfMass; }
+    double
+    getSkewness() { return skewness; }
     bool
     isUniformTime() const;
     double
