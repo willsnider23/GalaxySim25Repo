@@ -17,7 +17,7 @@ using namespace std;
 namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
-    const int N = 100;                       // Number of bodies in the simulation
+    const int N = 123456789;                       // Number of bodies in the simulation
     const double Tmax = 5000;               // Runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
@@ -30,7 +30,7 @@ namespace settings {
             dooubles: off = -1
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
-    const bool g_ratios = false;             // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
+    const bool g_ratios = true;             // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
     const bool plCir = false;                // planar circular orbits in xy plane (only works for Newtonian)
