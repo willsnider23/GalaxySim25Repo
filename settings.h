@@ -18,7 +18,7 @@ namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
     const int N = 100;                       // Number of bodies in the simulation
-    const double Tmax = 5000;               // Runtime in My
+    const double Tmax = 500;               // Runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
