@@ -26,6 +26,7 @@ class Galaxy {
     double r_half, a_s, r_tidal;
     double host_R, host_M;
     PosMat centerOfMass = { {}, {} };
+    double skewness;
 
 public:
     Galaxy(Model& model);

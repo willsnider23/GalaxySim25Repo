@@ -117,6 +117,14 @@ Galaxy::calcSkewness() {
         posList.push_back(s.getPos()[0]);
     }
     sort(posList.begin(), posList.end());
+
+    // finding 10th, 50th, and 90th percentile values for Kelly's coeff
+    double P_ten = posList[floor(posList.size() * 0.1)];
+    double P_fifty = posList[floor(posList.size() * 0.5)];
+    double P_ninety = posList[floor(posList.size() * 0.9)];
+
+    // Kelly's Coefficient of Skewness
+    double SK = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
 }
 
 void
