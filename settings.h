@@ -31,7 +31,7 @@ namespace settings {
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
     const bool MOND = true;                  // Modified Newtonian Dymanics switch
-    const bool EFE = false;                  // External Field Effect switch
+    const bool EFE = false;                   // External Field Effect switch
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
     const bool g_ratios = true;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
@@ -53,7 +53,6 @@ namespace settings {
     // Dispersion Controls
     const int axis = 1;                      // Viewing Axis: 1 = x, 2 = y, 3 = z
     const double trunc_dist = -1;            // Distance to Truncate Dispersion & COM 
-
     // Output Control
     const string simOutput = "results.txt";
     const string dispOutput = "disp_dat.txt";

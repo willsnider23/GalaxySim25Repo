@@ -87,6 +87,7 @@ void setModelStats(Model& stats) {
 
     cout << "Enter newtonian log(gi/a0) at r_half: ";
     cin >> log_int_rat;
+    stats["log_int_rat"] = log_int_rat;
 
     stats["mass"] = settings::toy_mass;
     stats["r_half"] = sqrt(consts::G * settings::toy_mass / (2.0 * consts::a_mond * pow(10, log_int_rat)));
@@ -96,6 +97,7 @@ void setModelStats(Model& stats) {
 
         cout << "Enter dynamic ge/a0 at CoM: ";
         cin >> ext_rat;
+        stats["ext_rat"] = ext_rat;
         cout << endl;
 
         stats["R_mw"] = settings::toy_hostR;
@@ -109,8 +111,13 @@ void setModelStats(Model& stats) {
 
 void
 printInitConds(Model& modelStats) {
-    cout << "Running with the following initial conditions..." << endl;
-    cout << "Model Name: " << settings::modelName << endl;
+    cout << "\nRunning with the following initial conditions..." << endl;
+    if (!settings::g_ratios) cout << "Model Name: " << settings::modelName << endl;
+    else {
+        cout << "Acc Ratios:" << endl;
+        cout << "\tgi/a0 = " << pow(10, modelStats["log_int_rat"]) << endl;
+        cout << "\tge/a0 = " << modelStats["ext_rat"] << endl;
+    }
     cout << "Dsph Mass: \t" << modelStats["mass"] << " solar masses" << endl;
     cout << "Pop. Size: \t" << settings::N << endl;
     cout << "R_Half: \t" << modelStats["r_half"] << " pc" << endl;
@@ -131,7 +138,7 @@ printInitConds(Model& modelStats) {
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
     if (settings::EFE) {
-        cout << "\tEFE: \tON" << endl;
+        cout << "\tEFE: \t\tON" << endl;
         cout << "\t\tHost Mass: \t" << modelStats["M_mw"] << " solar masses" << endl;
         cout << "\t\tTidal Radius: \t" << modelStats["r_tidal"] << " pc" << endl;
     }
@@ -412,10 +419,10 @@ int main(int argc, char* argv[]) {
                     cout << "Star " << minStar.getID() << " caused output at t = " << time
                         << " My   (" << outputCount / timePerWrite << "/" << settings::consoleWrites << ")"
                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
+                    dsph.calcSkewness();
+                    skews.push_back(dsph.getSkewness());
                     timer.reset();
                 }
-                dsph.calcSkewness();
-                skews.push_back(dsph.getSkewness());
                 outputCount++;
                 // if (outputCount % 50 == 0) cout << "Anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
             }
@@ -424,7 +431,7 @@ int main(int argc, char* argv[]) {
 
         ofstream skewFile("skews.txt");
         for (int i = 0; i < skews.size(); i++) {
-            cout << i << "\t" << skews[i] << endl;
+            // cout << i << "\t" << skews[i] << endl;
             skewFile << i << "\t" << skews[i] << endl;
         }
 
