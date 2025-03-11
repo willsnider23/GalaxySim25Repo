@@ -30,6 +30,7 @@ Galaxy::Galaxy(Model& model) {
         }
         population = initialConditions(r_half, baryonCloudMass, host_R, host_M);
         calcCOM();
+        COMa_and_adot();
 }
 
 // Getters
@@ -107,6 +108,34 @@ Galaxy::calcCOM() {
     }
     centerOfMass[0] = { sumR[0] / settings::N, sumR[1] / settings::N, sumR[2] / settings::N };
     centerOfMass[1] = { sumV[0] / settings::N, sumV[1] / settings::N, sumV[2] / settings::N };
+}
+
+double
+dotProduct(const vector<double>& a, const vector<double>& b) {
+    double sum = 0;
+    for (int i = 0; i < 3; i++) sum += a[i] * b[i];
+    return sum;
+}
+
+// Newtonian acceleration and jerk of the center of mass
+void
+Galaxy::COMa_and_adot() {
+    // copied from Star external field submethod
+    vector<double> pos_e = { -host_R, 0, 0 };
+    vector<double> vel = centerOfMass[1];
+    double r_e = calcMag(pos_e);
+    double r_e2 = pow(r_e, 2);
+    double r_e3 = pow(r_e, 3);
+    double factor1 = consts::G * host_M / r_e3;
+    double re_dot_v = dotProduct(pos_e, vel);
+    double factor2 = factor1 * 3.0 * re_dot_v / r_e2;
+
+    /* note here we can use velocity of star, vel, since the host is not moving.
+       If the host moves, this will have to be the relative velocity. */
+    for (int i = 0; i < 3; i++) {
+        centerOfMass[2][i] = -pos_e[i] * factor1;
+        centerOfMass[3][i] = (-vel[i] * factor1) + (pos_e[i] * factor2);
+    }
 }
 
 void 

@@ -25,7 +25,8 @@ class Galaxy {
     double baryonCloudMass;
     double r_half, a_s, r_tidal;
     double host_R, host_M;
-    PosMat centerOfMass = { {}, {} };
+    // centerOfMass pos, vel, acc, and jerk
+    PosMat centerOfMass = { {}, {}, {}, {} };
     double skewness;
 
 public:
@@ -65,6 +66,8 @@ public:
 // Mutators
     void
     calcCOM();
+    void
+    COMa_and_adot();
     void
     calcSkewness();
     void
