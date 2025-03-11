@@ -33,28 +33,6 @@ interiorMass(double cloudMass, double a_s, double r) {
 }
 
 double
-calcMag(vector<double>& vec) {
-    double mag = 0;
-    for (double val : vec) { mag += pow(val, 2); }
-    return sqrt(mag);
-}
-
-vector<double> 
-crossProduct(const vector<double>& a, const vector<double>& b)
-{
-    return { (b[2] * a[1]) - (a[2] * b[1]),
-             (b[0] * a[2]) - (a[0] * b[2]),
-             (b[1] * a[0]) - (a[1] * b[0]) };
-}
-
-double
-dotProduct(const vector<double>& a, const vector<double>& b) {
-    double sum = 0;
-    for (int i = 0; i < 3; i++) sum += a[i] * b[i];
-    return sum;
-}
-
-double
 initial_r(double r_half) {
     vector<double> pos;
     double a_s = r_half * sqrt(pow(2.0, (2.0/3.0)) - 1.0);
@@ -165,24 +143,23 @@ initial_vel(double cloudMass, double r_half, vector<double> pos) {
             vel_mag * cos(v_theta)};
 }
 
-// Constructor
-Star::Star(int idx, double r_half, double cloudMass, double hostR, double hostM) {
+// Constructors
+Star::Star(int idx, double r_half, double baryonCloudMass, double host_R, double host_M, PosMat& COM) {
     this->ID = idx;
     this->time = 0;
     this->timestep = settings::initStep;
     this->positionMatrix[0] = initial_pos(idx, r_half);
-    this->positionMatrix[1] = initial_vel(cloudMass, r_half, positionMatrix[0]);
-    this->a_and_adot(r_half, cloudMass, hostR, hostM, false);
+    this->positionMatrix[1] = initial_vel(baryonCloudMass, r_half, positionMatrix[0]);
+    this->a_and_adot(r_half, baryonCloudMass, host_R, host_M, false, COM);
 }
 
-Star::Star(int idx, double r_half, double cloudMass, double hostR, double hostM, 
-            vector<double> initR, vector<double> initV) {
+Star::Star(int idx, double r_half, double baryonCloudMass, double host_R, double host_M, vector<double> initR, vector<double> initV, PosMat& COM) {
     this->ID = idx;
     this->time = 0;
     this->timestep = settings::initStep;
     this->positionMatrix[0] = initR;
     this->positionMatrix[1] = initV;
-    this->a_and_adot(r_half, cloudMass, hostR, hostM, false);
+    this->a_and_adot(r_half, baryonCloudMass, host_R, host_M, false, COM);
 }
 
 // Getters
@@ -266,7 +243,7 @@ externalField(vector<double>& pos, vector<double>& vel,
 
 // Returns EFE corrected internal acceleration and jerk
 vector<vector<double>>
-EFE(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, double hostR, double hostM) {
+EFE(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, PosMat& COM) {
     // Newtonian external a  and a-dot
     vector<double> gne = a_and_j[1];
     vector<double> gne_dot = a_and_j[4];
@@ -274,10 +251,8 @@ EFE(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, d
     vector<double> gntot = a_and_j[2];
     vector<double> gntot_dot = a_and_j[5];
     // Newtonian CoM external a and a-dot
-    vector<double> origin(3, 0);
-    vector<vector<double>> ext_fieldCoM = externalField(origin, origin, hostR, hostM);
-    vector<double> gnCoM = ext_fieldCoM[0];
-    vector<double> gnCoM_dot = ext_fieldCoM[1];
+    vector<double> gnCoM = COM[2];
+    vector<double> gnCoM_dot = COM[3];
 
     double gne_mag = calcMag(gne);
     double gntot_mag = calcMag(gntot);
@@ -307,7 +282,7 @@ EFE(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, d
 }
 
 PosMat
-MONDCorrections(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, double hostR, double hostM) {
+MONDCorrections(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, PosMat& COM) {
     // Switch notation here - use g's instead of a's for accelerations to
     // make it consistent with the MOND notes
     vector<double> gni = a_and_j[0];
@@ -332,7 +307,7 @@ MONDCorrections(vector<double>& pos, vector<double>& vel, vector<vector<double>>
         corrections.push_back(g_dot);
     } else { 
     // EFE case
-        vector<vector<double>> g_EFE = EFE(pos, vel, a_and_j, hostR, hostM);
+        vector<vector<double>> g_EFE = EFE(pos, vel, a_and_j, COM);
 
         corrections.push_back(g_EFE[0]);
         corrections.push_back(g_EFE[1]);
@@ -372,7 +347,7 @@ STVG(vector<double>& pos, vector<double>& vel, vector<double>& acc,
 
 // bool prediction: 0 = positionMatrix, 1 = predictionMatrix
 void
-Star::a_and_adot(double r_half, double cloudMass, double hostR, double hostM, bool prediction) {
+Star::a_and_adot(double r_half, double baryonCloudMass, double host_R, double host_M, bool prediction, PosMat& COM) {
     // the integrated acceleration and jerk
     vector<double> a(3, 0);
     vector<double> j(3, 0);
@@ -396,7 +371,7 @@ Star::a_and_adot(double r_half, double cloudMass, double hostR, double hostM, bo
 
     // Scalelength and internal mass functions
     double a_s = r_half * sqrt(pow(2.0, (2.0/3.0)) - 1.0);
-    double int_mass = interiorMass(cloudMass, a_s, r);
+    double int_mass = interiorMass(baryonCloudMass, a_s, r);
 
     // If there's a centeral blackhole, add to int_mass
     if (settings::blackHole) {
@@ -406,7 +381,7 @@ Star::a_and_adot(double r_half, double cloudMass, double hostR, double hostM, bo
     // Common factors needed for a and a-dot
     double factor_1 = int_mass / r3;
     double factor_2 = int_mass * 3.0 * rdotv / r5;
-    double int_mass_dot = (3.0 * r * cloudMass * rdotv * pow(a_s, 2)) / 
+    double int_mass_dot = (3.0 * r * baryonCloudMass * rdotv * pow(a_s, 2)) / 
                                         pow((r2 + pow(a_s, 2)), (2.5));
     double factor_3 = int_mass_dot / r3;
 
@@ -419,15 +394,13 @@ Star::a_and_adot(double r_half, double cloudMass, double hostR, double hostM, bo
     }
     if (settings::EFE) {
         // External field on star
-        vector<vector<double>> ext_field = externalField(pos, vel, hostR, hostM);
+        vector<vector<double>> ext_field = externalField(pos, vel, host_R, host_M);
         a_e = ext_field[0];
         j_e = ext_field[1];
 
         // External field on CoM (origin for now)
-        vector<double> origin(3, 0), a_CoM, j_CoM;
-        vector<vector<double>> ext_fieldCoM = externalField(origin, origin, hostR, hostM);
-        a_CoM = ext_fieldCoM[0];
-        j_CoM = ext_fieldCoM[1];
+        vector<double> a_CoM = COM[2];
+        vector<double> j_CoM = COM[3];
 
         for (int i = 0; i < 3; i++) {
             a_t[i] = a_i[i] + a_e[i];
@@ -443,7 +416,7 @@ Star::a_and_adot(double r_half, double cloudMass, double hostR, double hostM, bo
     // Set of int, ext, and tot accelerations and jerks for easier transport
     vector<vector<double>> a_and_j = { a_i, a_e, a_t, j_i, j_e, j_t };
     if (settings::MOND) {
-        PosMat corrections = MONDCorrections(pos, vel, a_and_j, hostR, hostM);
+        PosMat corrections = MONDCorrections(pos, vel, a_and_j, COM);
         a = corrections[0];
         j = corrections[1];
     } else if (settings::STVG) {
@@ -524,16 +497,16 @@ Star::incrementTime() {
 }
 
 double
-Star::updateStar(double rhalf, double gMass, double hostR, double hostM) {
+Star::updateStar(double r_half, double baryonCloudMass, double host_R, double host_M, PosMat& COM) {
     // Integrate star forward one step
     this->predict(timestep);
-    this->a_and_adot(rhalf, gMass, hostR, hostM, true);
+    this->a_and_adot(r_half, baryonCloudMass, host_R, host_M, true, COM);
     this->correct(timestep);
     // Update time to after timestep, give update star new timestep
     this->incrementTime();
 
     if (settings::freezeStrays) {
-        vector<double> posFromHost = { positionMatrix[0][0] - hostR, positionMatrix[0][1], positionMatrix[0][2] };
+        vector<double> posFromHost = { positionMatrix[0][0] - host_R, positionMatrix[0][1], positionMatrix[0][2] };
         double distFromHost = calcMag(posFromHost);
         if (distFromHost <= settings::freezeR) this->frozen = true;
     }

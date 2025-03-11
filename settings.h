@@ -84,4 +84,24 @@ namespace consts {
     // uniform_real_distribution<double> distribution(0.0, 1.0);
 }  // namespace consts
 
+namespace {
+    double dotProduct(const vector<double>& a, const vector<double>& b) {
+        double sum = 0;
+        for (int i = 0; i < 3; i++) sum += a[i] * b[i];
+        return sum;
+    }
+
+    vector<double> crossProduct(const vector<double>& a, const vector<double>& b) {
+        return { (b[2] * a[1]) - (a[2] * b[1]),
+                 (b[0] * a[2]) - (a[0] * b[2]),
+                 (b[1] * a[0]) - (a[1] * b[0]) };
+    }
+
+    double calcMag(vector<double>& vec) {
+        double mag = 0;
+        for (double val : vec) { mag += pow(val, 2); }
+        return sqrt(mag);
+    }
+}
+
 #endif

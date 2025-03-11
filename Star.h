@@ -32,8 +32,8 @@ Star {
 
 public:
 // Constuctor
-    Star(int idx, double r_half, double cloudMass, double hostR, double hostM);
-    Star(int idx, double r_half, double cloudMass, double hostR, double hostM, vector<double> initR, vector<double> initV);
+    Star(int idx, double r_half, double baryonCloudMass, double host_R, double host_M, PosMat& COM);
+    Star(int idx, double r_half, double baryonCloudMass, double host_R, double host_M, vector<double> initR, vector<double> initV, PosMat& COM);
 // Getters
     int
     getID() const { return ID; }
@@ -78,13 +78,13 @@ public:
     void
     predict(double tstep);
     void
-    a_and_adot(double r_half, double cloudMass, double hostR, double hostM, bool prediction);
+    a_and_adot(double r_half, double baryonCloudMass, double host_R, double host_M, bool prediction, PosMat& COM);
     void
     correct(double step);
     void
     incrementTime();
     double
-    updateStar(double rhalf, double gMass, double hostR, double hostM);
+    updateStar(double r_half, double baryonCloudMass, double host_R, double host_M, PosMat& COM);
     void
     addLog();
 };

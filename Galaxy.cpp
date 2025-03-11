@@ -3,13 +3,16 @@
 #include "Galaxy.h"
 #include "settings.h"
 
+using PosMat = vector<vector<double>>;
+
 vector<Star>
-initialConditions(double r_half, double cloudMass, double hostR, double hostM) {
+createPop(double r_half, double baryonCloudMass, double host_R, 
+          double host_M, PosMat& centerOfMass) {
     vector<Star> stars;
 
     // Initialize N bodies, push into pop
     for (int idx = 0; idx < settings::N; idx++) {
-        Star star(idx, r_half, cloudMass, hostR, hostM);
+        Star star(idx, r_half, baryonCloudMass, host_R, host_M, centerOfMass);
         stars.push_back(star);
     }        
     return stars;
@@ -28,9 +31,9 @@ Galaxy::Galaxy(Model& model) {
             host_R = INFINITY;
             host_M = 0;
         }
-        population = initialConditions(r_half, baryonCloudMass, host_R, host_M);
-        calcCOM();
         COMa_and_adot();
+        population = createPop(r_half, baryonCloudMass, host_R, host_M, centerOfMass);
+        calcCOM();
 }
 
 // Getters
@@ -51,13 +54,6 @@ Galaxy::isUniformTime() const {
             return false;
     }
     return true;
-}
-
-double
-calcMag(vector<double> vec) {
-    double mag = 0;
-    for (double val : vec) { mag += pow(val, 2); }
-    return sqrt(mag);
 }
 
 double
@@ -110,19 +106,13 @@ Galaxy::calcCOM() {
     centerOfMass[1] = { sumV[0] / settings::N, sumV[1] / settings::N, sumV[2] / settings::N };
 }
 
-double
-dotProduct(const vector<double>& a, const vector<double>& b) {
-    double sum = 0;
-    for (int i = 0; i < 3; i++) sum += a[i] * b[i];
-    return sum;
-}
-
 // Newtonian acceleration and jerk of the center of mass
+// copied from Star external field submethod
 void
 Galaxy::COMa_and_adot() {
-    // copied from Star external field submethod
+    // currently fixed at origin & static (have it follow calculated COM later?)
     vector<double> pos_e = { -host_R, 0, 0 };
-    vector<double> vel = centerOfMass[1];
+    vector<double> vel(3, 0);
     double r_e = calcMag(pos_e);
     double r_e2 = pow(r_e, 2);
     double r_e3 = pow(r_e, 3);
@@ -165,10 +155,10 @@ Galaxy::wrangleStars(double time) {
 }
 
 void
-Galaxy::HITS(Star& s, double time) const {
+Galaxy::HITS(Star& s, double time) {
     if (s.getAfterTimestep() > time) {
         s.predict(time - s.getTime());
-        s.a_and_adot(r_half, baryonCloudMass, host_R, host_M, true);
+        s.a_and_adot(r_half, baryonCloudMass, host_R, host_M, true, centerOfMass);
         s.correct(time - s.getTime());
     }
 }

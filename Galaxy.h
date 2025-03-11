@@ -73,7 +73,7 @@ public:
     void
     wrangleStars(double time);
     void
-    HITS(Star& s,double time) const;
+    HITS(Star& s,double time);
 };
  
 #endif

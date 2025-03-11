@@ -41,13 +41,6 @@ private:
     std::chrono::time_point<clock_> beg_;
 };
 
-double
-vectorMag(vector<double>& vec) {
-    double mag = 0;
-    for (double val : vec) { mag += pow(val, 2); }
-    return sqrt(mag);
-}
-
 void
 getModelStats(Model& stats) {
     ifstream txtFile("modelData.txt");
@@ -165,7 +158,7 @@ printTides(double time, Galaxy& g, vector<vector<double>>& out) {
     for (int i = 0; i < settings::N; i++) {
         if (pop[i].isBound(g.getGeff(), g.getHostMass(), g.getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0))) {
             vector<double> pos = pop[i].getPos();
-            double r = vectorMag(pos);
+            double r = calcMag(pos);
             if (r > r_tidal_exp) r_tidal_exp = r;
         }
     }
@@ -407,7 +400,7 @@ int main(int argc, char* argv[]) {
             // Find star with smallest post-timestep time
             Star& minStar = minTimeStar(dsph);
             // Integrate star to next time step, returns time after timestep
-            time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass());
+            time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass(), dsph.getCOM());
             // Check if output time
             if (time >= outputCount * settings::outputTime) {
                 if (settings::CenterOfMass) dsph.calcCOM();
