@@ -30,29 +30,29 @@ namespace settings {
             dooubles: off = -1
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
-    const bool MOND = true;                // Modified Newtonian Dymanics switch
-    const bool EFE = false;                 // External Field Effect switch
+    const bool MOND = true;                  // Modified Newtonian Dymanics switch
+    const bool EFE = false;                  // External Field Effect switch
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
-    const bool g_ratios = true;             // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
+    const bool g_ratios = true;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
-    const bool blackHole = false;           // include central blackhole with mass mBlack
-        const double mBlack = 1e6;          // mass of central blackhole
+    const bool blackHole = false;            // include central blackhole with mass mBlack
+        const double mBlack = 1e6;           // mass of central blackhole
     // Data Tracking
     const bool CenterOfMass = false;         // tracks center of mass position
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
-    const bool freezeStrays = true;         // fixes problematic stars in space with zero velocity
-        const double freezeR = 5e4;         // Dist from host when stars freeze - 50 kpc
+    const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity
+        const double freezeR = 5e4;          // Dist from host when stars freeze - 50 kpc
     // Initial Distribution
     const bool plCir = false;                // planar circular orbits in xy plane (only works for Newtonian)
-    const double uniform_r = -1;           // stars initialized with same radius  
-    const double uniform_phi = -1;          // stars initialized with same phi, use with plCir
-    const double lin_dist_r = -1;           // stars radius dispersed evenly (to given max radius)
+    const double uniform_r = -1;             // stars initialized with same radius  
+    const double uniform_phi = -1;           // stars initialized with same phi, use with plCir
+    const double lin_dist_r = -1;            // stars radius dispersed evenly (to given max radius)
     const int lin_dist_phi = -1;             // stars phi dispersed evenly (in given number of groups)
 
     // Dispersion Controls
-    const int axis = 1;                     // Viewing Axis: 1 = x, 2 = y, 3 = z
-    const double trunc_dist = 1e10;         // Distance to Truncate Dispersion & COM (none = 1e10)
+    const int axis = 1;                      // Viewing Axis: 1 = x, 2 = y, 3 = z
+    const double trunc_dist = 1e10;          // Distance to Truncate Dispersion & COM (none = 1e10)
 
     // Output Control
     const string simOutput = "results.txt";
