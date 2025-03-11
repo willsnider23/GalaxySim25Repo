@@ -421,7 +421,13 @@ int main(int argc, char* argv[]) {
             }
         }
         cout << "Complete! :)" << endl;
-        for (int i = 0; i < skews.size(); i++) cout << i << "\t" << skews[i] << endl;
+
+        ofstream skewFile("skews.txt");
+        for (int i = 0; i < skews.size(); i++) {
+            cout << i << "\t" << skews[i] << endl;
+            skewFile << i << "\t" << skews[i] << endl;
+        }
+
         outFile.close();
 
         if (settings::run_dispersion) {
