@@ -52,7 +52,7 @@ namespace settings {
 
     // Dispersion Controls
     const int axis = 1;                      // Viewing Axis: 1 = x, 2 = y, 3 = z
-    const double trunc_dist = 1e10;          // Distance to Truncate Dispersion & COM (none = 1e10)
+    const double trunc_dist = -1;            // Distance to Truncate Dispersion & COM 
 
     // Output Control
     const string simOutput = "results.txt";
