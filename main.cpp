@@ -387,6 +387,7 @@ int main(int argc, char* argv[]) {
         cout << "\nSuccessfully initialized galaxy\n" << endl;
         ofstream outFile(settings::simOutput);
         vector<vector<double>> tideOutput = {};
+        vector<double> skews = {};
 
         Timer timer;
         double time = 0;
@@ -413,11 +414,14 @@ int main(int argc, char* argv[]) {
                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
                     timer.reset();
                 }
+                dsph.calcSkewness();
+                skews.push_back(dsph.getSkewness());
                 outputCount++;
                 // if (outputCount % 50 == 0) cout << "Anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
             }
         }
         cout << "Complete! :)" << endl;
+        for (int i = 0; i < skews.size(); i++) cout << i << "\t" << skews[i] << endl;
         outFile.close();
 
         if (settings::run_dispersion) {
