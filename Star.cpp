@@ -274,9 +274,20 @@ EFE(vector<double>& pos, vector<double>& vel, vector<vector<double>>& a_and_j, P
     // EFE MOND Corrected internal acc and jerk
     vector<double> gi(3), gi_dot(3);
     for (int i = 0; i < 3; i++) {
-        gi[i] = nu * gntot[i] - nu_c * gnCoM[i];
-        gi_dot[i] = nu * gntot_dot[i] + nu_dot * gntot[i]
-            - nu_c * gnCoM_dot[i] - nu_c_dot * gnCoM[i];
+        switch (settings::integ_acc) {
+            case 0:
+                gi[i] = nu * gntot[i];
+                gi_dot[i] = nu * gntot_dot[i] + nu_dot * gntot[i];
+                break;
+            case 1:
+                gi[i] = nu * gntot[i] - nu_c * gnCoM[i];
+                gi_dot[i] = nu * gntot_dot[i] + nu_dot * gntot[i]
+                            - nu_c * gnCoM_dot[i] - nu_c_dot * gnCoM[i];
+                break;
+            default:
+                throw invalid_argument("Integrated acceleration option not supported.");
+        }
+
     }
     return { gi, gi_dot };
 }
@@ -403,10 +414,22 @@ Star::a_and_adot(double r_half, double baryonCloudMass, double host_R, double ho
         vector<double> j_CoM = COM[3];
 
         for (int i = 0; i < 3; i++) {
+            // total acc on star
             a_t[i] = a_i[i] + a_e[i];
             j_t[i] = j_i[i] + j_e[i];
-            a[i] = a_t[i] - a_CoM[i];
-            j[i] = j_t[i] - j_CoM[i];
+
+            switch (settings::integ_acc) {
+                case 0:
+                    a[i] = a_t[i];
+                    j[i] = j_t[i];
+                    break;
+                case 1:
+                    a[i] = a_t[i] - a_CoM[i];
+                    j[i] = j_t[i] - j_CoM[i];
+                    break;
+                default:
+                    throw invalid_argument("Integrated acceleration selection not supported.");
+            }          
         }
     } else {
         a = a_i;

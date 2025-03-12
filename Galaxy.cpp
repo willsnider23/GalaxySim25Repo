@@ -110,6 +110,8 @@ Galaxy::calcCOM() {
 // copied from Star external field submethod
 void
 Galaxy::COMa_and_adot() {
+    centerOfMass[2] = { 0,0,0 };
+    centerOfMass[3] = { 0,0,0 };
     // currently fixed at origin & static (have it follow calculated COM later?)
     vector<double> pos_e = { -host_R, 0, 0 };
     vector<double> vel(3, 0);
