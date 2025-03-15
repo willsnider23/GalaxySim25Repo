@@ -127,6 +127,8 @@ printInitConds(Model& modelStats) {
     if (settings::lin_dist_r != -1) cout << "\tLinearly Distributed R: \t" << settings::lin_dist_r << " pc (max r)" << endl;
     if (settings::lin_dist_phi != -1) cout << "\tLinearly Distributed Phi: \t" << settings::lin_dist_phi << " groups" << endl;
     if (settings::CenterOfMass) cout << "\tCoM Tracking: \tON" << endl;
+    if (settings::trackTidalR) cout << "\Tidal R Tracking: \tON" << endl;
+    if (settings::trackSkews) cout << "\Skew Tracking: \tON" << endl;
     if (settings::blackHole) cout << "\tBlackhole: \tON" << endl;
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
@@ -167,11 +169,14 @@ printTides(double time, Galaxy& g, vector<vector<double>>& out) {
 
 void
 output(Galaxy& g, ofstream& outFile, double time) {
-   if (settings::format != 1) {
+    if (settings::format != 1) {
         outFile << time << "\t" << settings::N << "\t" << g.getRHalf();
         if (settings::format == 2) {
             PosMat COM = g.getCOM();
             outFile << "\t" << COM[0][0] << " " << COM[0][1] << " " << COM[0][2];
+        } else if (settings::format == 4) {
+            PosMat COM = g.getCOM();
+            outFile << "\t" << COM[1][0] << " " << COM[1][1] << " " << COM[1][2];
         }
         outFile << endl;
     }
@@ -388,6 +393,7 @@ int main(int argc, char* argv[]) {
         ofstream outFile(settings::simOutput);
         vector<vector<double>> tideOutput = {};
         vector<double> skews = {};
+        vector<vector<double>> COMrecord = {};
 
         Timer timer;
         double time = 0;
@@ -403,7 +409,14 @@ int main(int argc, char* argv[]) {
             time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass(), dsph.getCOM());
             // Check if output time
             if (time >= outputCount * settings::outputTime) {
-                if (settings::CenterOfMass) dsph.calcCOM();
+                if (settings::CenterOfMass) {
+                    dsph.calcCOM();
+                    PosMat COM = dsph.getCOM();
+                    vector<double> record(7, 0);
+                    record[0] = outputCount;
+                    for (int i = 1; i < 7; i++) record[i] = COM[i / 3][i % 3];
+                    COMrecord.push_back(record);
+                }
                 output(dsph, outFile, time);
                 if (settings::trackTidalR) printTides(time, dsph, tideOutput);
                 // Check if time to write to console
@@ -412,8 +425,10 @@ int main(int argc, char* argv[]) {
                     cout << "Star " << minStar.getID() << " caused output at t = " << time
                         << " My   (" << outputCount / timePerWrite << "/" << settings::consoleWrites << ")"
                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
-                    dsph.calcSkewness();
-                    skews.push_back(dsph.getSkewness());
+                    if (settings::trackSkews) {
+                        dsph.calcSkewness();
+                        skews.push_back(dsph.getSkewness());
+                    }
                     timer.reset();
                 }
                 outputCount++;
@@ -421,15 +436,26 @@ int main(int argc, char* argv[]) {
             }
         }
         cout << "Complete! :)" << endl;
-
-        ofstream skewFile("skews.txt");
-        for (int i = 0; i < skews.size(); i++) {
-            // cout << i << "\t" << skews[i] << endl;
-            skewFile << i << "\t" << skews[i] << endl;
-        }
-
         outFile.close();
 
+        if (settings::trackSkews) {
+            ofstream skewFile(settings::skewOutput);
+            for (int i = 0; i < skews.size(); i++) skewFile << i << "\t" << skews[i] << endl;
+            skewFile.close();
+        }
+        if (settings::trackTidalR) {
+            ofstream tidal(settings::tidalOutput);
+            tidal << tideOutput[0][0] << endl;
+            for (int i = 1; i < tideOutput.size(); i++) tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
+        }
+        if (settings::CenterOfMass) {
+            ofstream COMout(settings::COM_Output);
+            for (int i = 0; i < COMrecord.size(); i++) {
+                for (int j = 0; j < 7; j++) COMout << COMrecord[i][j] << "\t";
+                COMout << endl;
+            }
+        }
+        
         if (settings::run_dispersion) {
             if (settings::pos_out && settings::vel_out) {
                 double bulkDisp = dispersion(outputCount);
@@ -445,12 +471,6 @@ int main(int argc, char* argv[]) {
             }
             else
                 cout << "Unable to calculate dispersion profile without recorded positions and velocities" << endl;
-        }
-        if (settings::trackTidalR) {
-            ofstream tidal("tidalR.txt");
-            tidal << tideOutput[0][0] << endl;
-            for (int i = 1; i < tideOutput.size(); i++) 
-                tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
         }
 }
 /////////////////////////   End of Real Code    ////////////////////////////////
