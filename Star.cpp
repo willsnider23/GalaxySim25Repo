@@ -99,6 +99,32 @@ sign(double num) {
     return -1;
 }
 
+// Finds direction and mag of circular orbit speed (clockwise in xy)
+vector<double>
+circularOrbitVel(vector<double>& pos, double a_newt) {
+    double vel_mag, v_theta, v_phi;
+    double r = calcMag(pos);
+
+    double a;
+    if (settings::MOND) {
+        double y = a_newt / consts::a_mond;
+        double nu = LelliNu(y);
+        a = a_newt * nu;
+    }
+    else a = a_newt;
+
+    vel_mag = sqrt(a * r);
+    vector<double> unitPos = { pos[0] / r, pos[1] / r, pos[2] / r };
+    vector<double> v_hat;
+    v_hat = crossProduct(unitPos, { 0, 0, 1 });
+    if (pos[1] >= 0)
+        v_theta = acos(v_hat[2]);
+    else
+        v_theta = acos(-v_hat[2]) + consts::pi;
+    v_phi = atan(v_hat[1] / v_hat[0]);
+    return { vel_mag, v_theta, v_phi };
+}
+
 double
 calcVelocityMag(double cloudMass, double a_s, double r, double a_newt) {
     // Rejection technique to determine vel magnitude as portion of esc vel
@@ -112,9 +138,42 @@ calcVelocityMag(double cloudMass, double a_s, double r, double a_newt) {
     return ratio_q * vel_esc;
 }
 
+// { rho, theta, phi } -> { x, y, z }
 vector<double> 
-initial_vel(double cloudMass, double r_half, vector<double> pos) {
-    vector<double> vel;
+sphTocart(vector<double> vel_sph) {
+    return { vel_sph[0] * sin(vel_sph[1]) * cos(vel_sph[2]),
+             vel_sph[0] * sin(vel_sph[1]) * sin(vel_sph[2]),
+             vel_sph[0] * cos(vel_sph[1]) };
+}
+
+// Newtonian external field
+vector<vector<double>>
+externalField(vector<double>& pos, vector<double>& vel,
+    double hostR, double hostM) {
+    //External acceleration and jerk
+    vector<double> a_e(3, 0), j_e(3, 0);
+
+    // position relative to the host galaxy at <hostR, 0, 0>
+    vector<double> pos_e = { pos[0] - hostR, pos[1], pos[2] };
+    double r_e = calcMag(pos_e);
+    double r_e2 = pow(r_e, 2);
+    double r_e3 = pow(r_e, 3);
+    double factor1 = consts::G * hostM / r_e3;
+    double re_dot_v = dotProduct(pos_e, vel);
+    double factor2 = factor1 * 3.0 * re_dot_v / r_e2;
+
+    /* components of gnedot EFE - 1; note here we can use velocity of star, vel, since the host
+   is not moving. If the host moves, this will have to be the relative velocity. */
+    for (int i = 0; i < 3; i++) {
+        a_e[i] = -pos_e[i] * factor1;
+        j_e[i] = (-vel[i] * factor1) + (pos_e[i] * factor2);
+    }
+    return { a_e, j_e };
+}
+
+vector<double> 
+initial_vel(double cloudMass, double r_half, vector<double> pos, double host_R, double host_M) {
+    vector<double> vel_sph;
     double a_s = r_half * sqrt(pow(2.0, (2.0/3.0)) - 1.0);
     double r = calcMag(pos);
     double mass_int = interiorMass(cloudMass, a_s, r);
@@ -122,25 +181,26 @@ initial_vel(double cloudMass, double r_half, vector<double> pos) {
 
     double vel_mag, v_theta, v_phi;
     if (settings::plCir) {
-        vel_mag = sqrt(a_newt * r);
-        vector<double> unitPos = { pos[0] / r, pos[1] / r, pos[2] / r };
-        vector<double> v_hat;
-        v_hat = crossProduct(unitPos, { 0, 0, 1 });
-        if (pos[1] >= 0)
-            v_theta = acos(v_hat[2]);
-        else
-            v_theta = acos(-v_hat[2]) + consts::pi;
-        v_phi = atan(v_hat[1] / v_hat[0]);
+        vel_sph = circularOrbitVel(pos, a_newt);
+        vel_mag = vel_sph[0];
+        v_theta = vel_sph[1];
+        v_phi = vel_sph[2];
     } else {
         vel_mag = calcVelocityMag(cloudMass, a_s, r, a_newt);
         // Randomize Angles
         v_theta = acos(1 - 2 * RNG());
         v_phi = 2 * consts::pi * RNG();
     }
-    
-    return {vel_mag * sin(v_theta) * cos(v_phi),
-            vel_mag * sin(v_theta) * sin(v_phi),
-            vel_mag * cos(v_theta)};
+    vector<double> vel = sphTocart({vel_mag, v_theta, v_phi});
+
+    if (settings::integ_acc == 0) {
+        double a_ext = calcMag(externalField(pos, vel, host_R, host_M)[0]);
+        vector<double> pos_ext = { pos[0] - host_R, pos[1], pos[2] };
+        vector<double> vel_orbit_sph = circularOrbitVel(pos_ext, a_ext);
+        vector<double> vel_orbit = sphTocart(vel_orbit_sph);
+        for (int i = 0; i < 3; i++) vel[i] += vel_orbit[i];
+    }
+    return vel;
 }
 
 // Constructors
@@ -149,7 +209,7 @@ Star::Star(int idx, double r_half, double baryonCloudMass, double host_R, double
     this->time = 0;
     this->timestep = settings::initStep;
     this->positionMatrix[0] = initial_pos(idx, r_half);
-    this->positionMatrix[1] = initial_vel(baryonCloudMass, r_half, positionMatrix[0]);
+    this->positionMatrix[1] = initial_vel(baryonCloudMass, r_half, positionMatrix[0], host_R, host_M);
     this->a_and_adot(r_half, baryonCloudMass, host_R, host_M, false, COM);
 }
 
@@ -214,31 +274,6 @@ Star::predict(double tstep) {
     }
     predMat[0] = r_pred;
     predMat[1] = v_pred;
-}
-
-// Newtonian external field
-vector<vector<double>>
-externalField(vector<double>& pos, vector<double>& vel,
-    double hostR, double hostM) {
-    //External acceleration and jerk
-    vector<double> a_e(3, 0), j_e(3, 0);
-
-    // position relative to the host galaxy at <hostR, 0, 0>
-    vector<double> pos_e = { pos[0] - hostR, pos[1], pos[2] };
-    double r_e = calcMag(pos_e);
-    double r_e2 = pow(r_e, 2);
-    double r_e3 = pow(r_e, 3);
-    double factor1 = consts::G * hostM / r_e3;
-    double re_dot_v = dotProduct(pos_e, vel);
-    double factor2 = factor1 * 3.0 * re_dot_v / r_e2;
-
-    /* components of gnedot EFE - 1; note here we can use velocity of star, vel, since the host
-   is not moving. If the host moves, this will have to be the relative velocity. */
-    for (int i = 0; i < 3; i++) {
-        a_e[i] = -pos_e[i] * factor1;
-        j_e[i] = (-vel[i] * factor1) + (pos_e[i] * factor2);
-    }
-    return { a_e, j_e };
 }
 
 // Returns EFE corrected internal acceleration and jerk
