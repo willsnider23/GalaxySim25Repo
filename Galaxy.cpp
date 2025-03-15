@@ -96,7 +96,7 @@ Galaxy::calcCOM() {
         for (int i = 0; i < 3; i++) {
             vector<double> pos = s.getPos();
             vector<double> vel = s.getVel();
-            if (calcMag(pos) < settings::trunc_dist) {
+            if (settings::trunc_dist == -1 || calcMag(pos) < settings::trunc_dist) {
                 sumR[i] += s.getPos()[i];
                 sumV[i] += s.getVel()[i];
             }
