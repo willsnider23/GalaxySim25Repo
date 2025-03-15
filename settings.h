@@ -31,9 +31,9 @@ namespace settings {
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
     const bool MOND = false;                  // Modified Newtonian Dymanics switch
-    const bool EFE = false;                   // External Field Effect switch
+    const bool EFE = true;                   // External Field Effect switch
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
-    const bool g_ratios = false;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
+    const bool g_ratios = true;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
     const bool blackHole = false;            // include central blackhole with mass mBlack
@@ -45,14 +45,15 @@ namespace settings {
     *   2 = gi + ge_star - ge_star (no tides)                *** not implemented ***
     *   3 = gi + ge_COM - ge_COM   (host galaxy approx)      *** not implemented ***
     */ 
-    const int integ_acc = 1;
+    const int integ_acc = 0;
     // Data Tracking
-    const bool CenterOfMass = false;         // tracks center of mass position
+    const bool CenterOfMass = true;          // tracks center of mass position
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
+    const bool trackSkews = true;            // records skew param at every console output
     const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity
         const double freezeR = 5e4;          // Dist from host when stars freeze - 50 kpc
     // Initial Distribution
-    const bool plCir = false;                // planar circular orbits in xy plane (only works for Newtonian)
+    const bool plCir = true;                // planar circular orbits in xy plane (only works for Newtonian)
     const double uniform_r = -1;             // stars initialized with same radius  
     const double uniform_phi = -1;           // stars initialized with same phi, use with plCir
     const double lin_dist_r = -1;            // stars radius dispersed evenly (to given max radius)
@@ -64,6 +65,9 @@ namespace settings {
     // Output Control
     const string simOutput = "results.txt";
     const string dispOutput = "disp_dat.txt";
+    const string COM_Output = "centerOmass.txt";
+    const string tidalOutput = "tidalR.txt";
+    const string skewOutput = "skews.txt";
     const bool run_dispersion = false;
     const bool pos_out = true, vel_out = true, acc_out = false;
         /* Format Options :
@@ -71,8 +75,9 @@ namespace settings {
         *   1 = Statistics [ID x y z / ...]
         *   2 = Animation w/ COM [time N COM / ID x y z...]
         *   3 = COM r and v [time x y z vx vy vz / ...]
+        *   4 = Animation - COM vel [time N COM_v / ID x y z...]
         */
-    const int format = 0;
+    const int format = 4;
 }   // namespace set
 
 namespace consts {
