@@ -93,9 +93,9 @@ Galaxy::calcCOM() {
     vector<double> sumR = { 0, 0, 0 }, sumV = { 0, 0, 0 };
     for (Star& s : population)
     {
+        vector<double> pos = s.getPos();
+        vector<double> vel = s.getVel();
         for (int i = 0; i < 3; i++) {
-            vector<double> pos = s.getPos();
-            vector<double> vel = s.getVel();
             if (settings::trunc_dist == -1 || calcMag(pos) < settings::trunc_dist) {
                 sumR[i] += s.getPos()[i];
                 sumV[i] += s.getVel()[i];

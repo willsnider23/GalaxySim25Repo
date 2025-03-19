@@ -1,9 +1,9 @@
 QtiPlot 0.9.8 project file
 <scripting-lang>	muParser
-<windows>	12
+<windows>	13
 <table>
 skews	100	2	3/11/2025 1:32:47 PM
-geometry	0	0	445	220	
+geometry	294	787	445	220	minimized	
 header	1[X]	2[Y]
 ColWidth	100	100	
 <com>
@@ -116,202 +116,9 @@ WindowLabel	C:/Users/Will/source/repos/GalaxySim25/skews.txt	2
 99	99	-0.843759
 </data>
 </table>
-<multiLayer>
-Graph1	1	1	3/11/2025 1:32:52 PM
-geometry	40	-5	571	499	
-WindowLabel		2
-Margins	5	5	5	5
-Spacing	5	5
-LayerCanvasSize	400	300
-Alignement	0	0
-<AlignPolicy>0</AlignPolicy>
-<CommonAxes>0</CommonAxes>
-<graph>
-ggeometry	12	14	539	416
-<PageGeometry>0.0218579	0.0324826	0.981785	0.965197</PageGeometry>
-PlotTitle	Skewness vs Time (-1, 0.3) MOND	#000000	4228
-<Antialiasing>0</Antialiasing>
-<Autoscaling>1</Autoscaling>
-<ScaleFonts>1</ScaleFonts>
-<GridOnTop>0</GridOnTop>
-<MissingDataGap>1</MissingDataGap>
-Background	#ffffff	0
-Margin	0
-Border	0	#000000
-grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
-EnabledAxes	1	1	1	1	
-AxesTitles	Time (My)	Skewness		%(?Y)	
-AxesTitleColors	#000000	#000000	#000000	#000000	
-AxesTitleAlignment	5124	5124	5124	5124
-AxesTitleDistance	2	2	2	2
-InvertedTitle	0	0	0	0
-TitleFont	MS Shell Dlg 2	10	75	0	0	0
-ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
-AxisFont0	MS Shell Dlg 2	8	50	0	0	0
-AxisFont1	MS Shell Dlg 2	8	50	0	0	0
-AxisFont2	MS Shell Dlg 2	8	50	0	0	0
-AxisFont3	MS Shell Dlg 2	8	50	0	0	0
-AxesColors	#000000	#000000	#000000	#000000
-AxesNumberColors	#000000	#000000	#000000	#000000
-AxesBaseline	0	0	0	0	
-CanvasBackground	#ffffff	0
-curve	skews_1	skews_2	1	0	#000000	0	1	7	1	#000000	#000000	0	#000000	14	1	2	0	0	99	1
-<Function>
-<Type>0</Type>
-<Title>PolynomialFit1</Title>
-<Expression>a0+a1*x</Expression>
-<Variable>x</Variable>
-<Range>20	99</Range>
-<Points>100</Points>
-<Constant>a0	-0.487271270100797</Constant>
-<Constant>a1	-0.0041012584857009</Constant>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#ff0000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-<Function>
-<Type>0</Type>
-<Title>PolynomialFit2</Title>
-<Expression>a0+a1*x</Expression>
-<Variable>x</Variable>
-<Range>20	99</Range>
-<Points>100</Points>
-<Constant>a0	-0.487271270100797</Constant>
-<Constant>a1	-0.0041012584857009</Constant>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#ff0000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-<Function>
-<Type>0</Type>
-<Title>PolynomialFit3</Title>
-<Expression>a0+a1*x</Expression>
-<Variable>x</Variable>
-<Range>20	99</Range>
-<Points>100</Points>
-<Constant>a0	-0.487271270100797</Constant>
-<Constant>a1	-0.0041012584857009</Constant>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#ff0000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-<Function>
-<Type>0</Type>
-<Title>F1</Title>
-<Expression>0</Expression>
-<Variable>x</Variable>
-<Range>-20	100</Range>
-<Points>100</Points>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#000000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-scale	0	-1	1	0	5	5	0	0
-scale	1	-1	1	0	5	5	0	0
-scale	2	-20	100	0	7	5	0	0
-scale	3	-20	100	0	7	5	0	0
-LabelsFormat	0	6	0	6	0	6	0	6
-AxisType	0	0	0	0	
-MajorTicks	1	1	1	1
-MinorTicks	1	1	1	1
-TicksLength	5	9
-DrawAxesBackbone	1	1	1	1	1
-AxesLineWidth	1
-LabelsRotation	0	0	0	0
-LabelsPrefix				
-LabelsSuffix				
-TickLabelsSpace	4	4	4	4
-ShowTicksPolicy	0	0	0	0
-EnabledTickLabels	1	1	1	1
-<Legend>
-<Frame>1</Frame>
-<Color>#000000</Color>
-<FrameWidth>1</FrameWidth>
-<LineStyle>0</LineStyle>
-<x>-10.050251256281</x>
-<y>-0.71006711409396</y>
-<right>33.9698492462312</right>
-<bottom>-0.90738255033557</bottom>
-<attachTo>1</attachTo>
-<onTop>1</onTop>
-<visible>1</visible>
-<Text>
-Y=-0.487-0.004X
-\l(5)y = 0
-</Text>
-<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
-<TextColor>#000000</TextColor>
-<Background>#ffffff</Background>
-<Alpha>0</Alpha>
-<Angle>0</Angle>
-<AutoUpdate>1</AutoUpdate>
-<TeXOutput>0</TeXOutput>
-</Legend>
-<Legend>
-<Frame>1</Frame>
-<Color>#000000</Color>
-<FrameWidth>1</FrameWidth>
-<LineStyle>0</LineStyle>
-<x>50.251256281407</x>
-<y>-0.22281879194631</y>
-<right>80.1005025125628</right>
-<bottom>-0.339597315436242</bottom>
-<attachTo>1</attachTo>
-<onTop>1</onTop>
-<visible>1</visible>
-<Text>
-R<sup>2</sup> = 0.9
-</Text>
-<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
-<TextColor>#000000</TextColor>
-<Background>#ffffff</Background>
-<Alpha>0</Alpha>
-<Angle>0</Angle>
-<AutoUpdate>0</AutoUpdate>
-<TeXOutput>0</TeXOutput>
-</Legend>
-</graph>
-<LinkXAxes>0</LinkXAxes>
-<ScaleLayers>1</ScaleLayers>
-</multiLayer>
 <table>
 Table1	100	2	3/11/2025 2:23:40 PM
-geometry	1016	0	445	220	
+geometry	588	787	445	220	minimized	
 header	1[X]	2[Y]
 ColWidth	100	100	
 <com>
@@ -424,137 +231,9 @@ WindowLabel	C:/Users/Will/source/repos/GalaxySim25/skews.txt	2
 99	99	0.101805
 </data>
 </table>
-<multiLayer>
-Graph2	1	1	3/11/2025 2:23:45 PM
-geometry	613	2	571	499	
-WindowLabel		2
-Margins	5	5	5	5
-Spacing	5	5
-LayerCanvasSize	400	300
-Alignement	0	0
-<AlignPolicy>0</AlignPolicy>
-<CommonAxes>0</CommonAxes>
-<graph>
-ggeometry	5	5	539	416
-<PageGeometry>0.00910747	0.0116009	0.981785	0.965197</PageGeometry>
-PlotTitle	Skewness vs Time (-1, 0) MOND	#000000	4228
-<Antialiasing>0</Antialiasing>
-<Autoscaling>1</Autoscaling>
-<ScaleFonts>1</ScaleFonts>
-<GridOnTop>0</GridOnTop>
-<MissingDataGap>1</MissingDataGap>
-Background	#ffffff	0
-Margin	0
-Border	0	#000000
-grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
-EnabledAxes	1	1	1	1	
-AxesTitles	%(?X)	%(?Y)		%(?Y)	
-AxesTitleColors	#000000	#000000	#000000	#000000	
-AxesTitleAlignment	5124	5124	5124	5124
-AxesTitleDistance	2	2	2	2
-InvertedTitle	0	0	0	0
-TitleFont	MS Shell Dlg 2	10	75	0	0	0
-ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
-AxisFont0	MS Shell Dlg 2	8	50	0	0	0
-AxisFont1	MS Shell Dlg 2	8	50	0	0	0
-AxisFont2	MS Shell Dlg 2	8	50	0	0	0
-AxisFont3	MS Shell Dlg 2	8	50	0	0	0
-AxesColors	#000000	#000000	#000000	#000000
-AxesNumberColors	#000000	#000000	#000000	#000000
-AxesBaseline	0	0	0	0	
-CanvasBackground	#ffffff	0
-curve	Table1_1	Table1_2	1	0	#000000	0	1	7	1	#000000	#000000	0	#000000	14	1	2	0	0	99	1
-<Function>
-<Type>0</Type>
-<Title>PolynomialFit1</Title>
-<Expression>a0+a1*x</Expression>
-<Variable>x</Variable>
-<Range>0	99</Range>
-<Points>100</Points>
-<Constant>a0	0.105290836352475</Constant>
-<Constant>a1	-0.00167301610934293</Constant>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#ff0000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-<Function>
-<Type>0</Type>
-<Title>F1</Title>
-<Expression>0</Expression>
-<Variable>x</Variable>
-<Range>0	80</Range>
-<Points>100</Points>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#000000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-scale	0	-1	1	0	5	5	0	0
-scale	1	-1	1	0	5	5	0	0
-scale	2	-20	100	0	7	5	0	0
-scale	3	-20	100	0	7	5	0	0
-LabelsFormat	0	6	0	6	0	6	0	6
-AxisType	0	0	0	0	
-MajorTicks	1	1	1	1
-MinorTicks	1	1	1	1
-TicksLength	5	9
-DrawAxesBackbone	1	1	1	1	1
-AxesLineWidth	1
-LabelsRotation	0	0	0	0
-LabelsPrefix				
-LabelsSuffix				
-TickLabelsSpace	4	4	4	4
-ShowTicksPolicy	0	0	0	0
-EnabledTickLabels	1	1	1	1
-<Legend>
-<Frame>1</Frame>
-<Color>#000000</Color>
-<FrameWidth>1</FrameWidth>
-<LineStyle>0</LineStyle>
-<x>-13.082706766917</x>
-<y>0.89297658862876</y>
-<right>31.7293233082707</right>
-<bottom>0.438127090301003</bottom>
-<attachTo>1</attachTo>
-<onTop>1</onTop>
-<visible>1</visible>
-<Text>
-Y=0.105-0.0017X
-\l(3)y = 0
-</Text>
-<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
-<TextColor>#000000</TextColor>
-<Background>#ffffff</Background>
-<Alpha>0</Alpha>
-<Angle>0</Angle>
-<AutoUpdate>1</AutoUpdate>
-<TeXOutput>0</TeXOutput>
-</Legend>
-</graph>
-<LinkXAxes>0</LinkXAxes>
-<ScaleLayers>1</ScaleLayers>
-</multiLayer>
 <table>
 Table2	100	2	3/11/2025 2:29:22 PM
-geometry	0	220	445	220	
+geometry	882	787	445	220	minimized	
 header	1[X]	2[Y]
 ColWidth	100	100	
 <com>
@@ -667,117 +346,9 @@ WindowLabel	C:/Users/Will/source/repos/GalaxySim25/skews.txt	2
 99	99	0.233832
 </data>
 </table>
-<multiLayer>
-Graph3	1	1	3/11/2025 2:29:25 PM
-geometry	1188	9	571	499	active
-WindowLabel		2
-Margins	5	5	5	5
-Spacing	5	5
-LayerCanvasSize	400	300
-Alignement	0	0
-<AlignPolicy>0</AlignPolicy>
-<CommonAxes>0</CommonAxes>
-<graph>
-ggeometry	5	5	539	416
-<PageGeometry>0.00910747	0.0116009	0.981785	0.965197</PageGeometry>
-PlotTitle	Skewness vs Time (-1, 0.3) Newt	#000000	4228
-<Antialiasing>0</Antialiasing>
-<Autoscaling>1</Autoscaling>
-<ScaleFonts>1</ScaleFonts>
-<GridOnTop>0</GridOnTop>
-<MissingDataGap>1</MissingDataGap>
-Background	#ffffff	0
-Margin	0
-Border	0	#000000
-grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
-EnabledAxes	1	1	1	1	
-AxesTitles	%(?X)	%(?Y)		%(?Y)	
-AxesTitleColors	#000000	#000000	#000000	#000000	
-AxesTitleAlignment	5124	5124	5124	5124
-AxesTitleDistance	2	2	2	2
-InvertedTitle	0	0	0	0
-TitleFont	MS Shell Dlg 2	10	75	0	0	0
-ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
-AxisFont0	MS Shell Dlg 2	8	50	0	0	0
-AxisFont1	MS Shell Dlg 2	8	50	0	0	0
-AxisFont2	MS Shell Dlg 2	8	50	0	0	0
-AxisFont3	MS Shell Dlg 2	8	50	0	0	0
-AxesColors	#000000	#000000	#000000	#000000
-AxesNumberColors	#000000	#000000	#000000	#000000
-AxesBaseline	0	0	0	0	
-CanvasBackground	#ffffff	0
-curve	Table2_1	Table2_2	1	0	#000000	0	1	7	1	#000000	#000000	0	#000000	14	1	2	0	0	99	1
-<Function>
-<Type>0</Type>
-<Title>PolynomialFit1</Title>
-<Expression>a0+a1*x</Expression>
-<Variable>x</Variable>
-<Range>0	99</Range>
-<Points>100</Points>
-<Constant>a0	-0.021818271859406</Constant>
-<Constant>a1	0.00193015101938194</Constant>
-<Style>0</Style>
-<LineStyle>1</LineStyle>
-<Pen>
-	<Color>#ff0000</Color>
-	<Style>0</Style>
-	<Width>1</Width>
-</Pen>
-<xAxis>2</xAxis>
-<yAxis>0</yAxis>
-<CurveType>0</CurveType>
-<Visible>1</Visible>
-</Function>
-scale	0	-1	1	0	5	5	0	0
-scale	1	-1	1	0	5	5	0	0
-scale	2	-20	100	0	7	5	0	0
-scale	3	-20	100	0	7	5	0	0
-LabelsFormat	0	6	0	6	0	6	0	6
-AxisType	0	0	0	0	
-MajorTicks	1	1	1	1
-MinorTicks	1	1	1	1
-TicksLength	5	9
-DrawAxesBackbone	1	1	1	1	1
-AxesLineWidth	1
-LabelsRotation	0	0	0	0
-LabelsPrefix				
-LabelsSuffix				
-TickLabelsSpace	4	4	4	4
-ShowTicksPolicy	0	0	0	0
-EnabledTickLabels	1	1	1	1
-<Legend>
-<Frame>1</Frame>
-<Color>#000000</Color>
-<FrameWidth>1</FrameWidth>
-<LineStyle>0</LineStyle>
-<x>-16.992481203008</x>
-<y>0.93311036789298</y>
-<right>99.0977443609023</right>
-<bottom>0.732441471571906</bottom>
-<attachTo>1</attachTo>
-<onTop>1</onTop>
-<visible>1</visible>
-<Text>
-Y=-0.02+0.0019X
-</Text>
-<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
-<TextColor>#000000</TextColor>
-<Background>#ffffff</Background>
-<Alpha>0</Alpha>
-<Angle>0</Angle>
-<AutoUpdate>1</AutoUpdate>
-<TeXOutput>0</TeXOutput>
-</Legend>
-</graph>
-<LinkXAxes>0</LinkXAxes>
-<ScaleLayers>1</ScaleLayers>
-</multiLayer>
 <table>
 Table3	100	10	3/11/2025 4:09:53 PM
-geometry	1268	501	393	306	
+geometry	1268	491	393	306	
 header	1[X]	2[Y]	3[Y]	4[Y]	5[Y]	6[Y]	7[Y]	8[Y]	9[Y]	10[Y]
 ColWidth	100	100	100	100	100	100	100	100	100	100	
 <com>
@@ -890,96 +461,9 @@ WindowLabel		2
 99	99	-126.419	-135.54	-356.706	-11.5754	-4.48373	4.85148	0	0	
 </data>
 </table>
-<multiLayer>
-Graph4	1	1	3/11/2025 4:11:20 PM
-geometry	1204	347	562	481	
-WindowLabel		2
-Margins	5	5	5	5
-Spacing	5	5
-LayerCanvasSize	400	300
-Alignement	0	0
-<AlignPolicy>0</AlignPolicy>
-<CommonAxes>0</CommonAxes>
-<graph>
-ggeometry	6	6	530	400
-<PageGeometry>0.0111111	0.0145278	0.981481	0.968523</PageGeometry>
-PlotTitle		#000000	4228
-<Antialiasing>0</Antialiasing>
-<Autoscaling>1</Autoscaling>
-<ScaleFonts>1</ScaleFonts>
-<GridOnTop>0</GridOnTop>
-<MissingDataGap>1</MissingDataGap>
-Background	#ffffff	0
-Margin	0
-Border	0	#000000
-grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
-EnabledAxes	1	1	1	1	
-AxesTitles	%(?X)	%(?Y)		%(?Y)	
-AxesTitleColors	#000000	#000000	#000000	#000000	
-AxesTitleAlignment	5124	5124	5124	5124
-AxesTitleDistance	2	2	2	2
-InvertedTitle	0	0	0	0
-TitleFont	MS Shell Dlg 2	10	75	0	0	0
-ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
-AxisFont0	MS Shell Dlg 2	8	50	0	0	0
-AxisFont1	MS Shell Dlg 2	8	50	0	0	0
-AxisFont2	MS Shell Dlg 2	8	50	0	0	0
-AxisFont3	MS Shell Dlg 2	8	50	0	0	0
-AxesColors	#000000	#000000	#000000	#000000
-AxesNumberColors	#000000	#000000	#000000	#000000
-AxesBaseline	0	0	0	0	
-CanvasBackground	#ffffff	0
-curve	-	Table3_2	9	1	#000000	0	1	3	0	#000000	#000000	1	#000000	4	0	0	1	610.6	-3152	2954	2	0	0	99	1
-scale	0	0	50	0	6	5	0	0
-scale	1	0	50	0	6	5	0	0
-scale	2	-3000	3000	0	7	5	0	0
-scale	3	-3000	3000	0	7	5	0	0
-LabelsFormat	0	6	0	6	0	6	0	6
-AxisType	0	0	0	0	
-MajorTicks	1	1	1	1
-MinorTicks	1	1	1	1
-TicksLength	5	9
-DrawAxesBackbone	1	1	1	1	1
-AxesLineWidth	1
-LabelsRotation	0	0	0	0
-LabelsPrefix				
-LabelsSuffix				
-TickLabelsSpace	4	4	4	4
-ShowTicksPolicy	0	0	0	0
-EnabledTickLabels	1	1	1	1
-<Legend>
-<Frame>1</Frame>
-<Color>#000000</Color>
-<FrameWidth>1</FrameWidth>
-<LineStyle>0</LineStyle>
-<x>-849.62406015038</x>
-<y>48.327759197324</y>
-<right>639.097744360902</right>
-<bottom>43.4782608695652</bottom>
-<attachTo>1</attachTo>
-<onTop>1</onTop>
-<visible>1</visible>
-<Text>
-\l(1)%(1)
-</Text>
-<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
-<TextColor>#000000</TextColor>
-<Background>#ffffff</Background>
-<Alpha>0</Alpha>
-<Angle>0</Angle>
-<AutoUpdate>1</AutoUpdate>
-<TeXOutput>0</TeXOutput>
-</Legend>
-</graph>
-<LinkXAxes>0</LinkXAxes>
-<ScaleLayers>1</ScaleLayers>
-</multiLayer>
 <table>
 Table4	100	10	3/11/2025 4:16:37 PM
-geometry	49	492	546	220	
+geometry	49	482	546	220	
 header	1[X]	2[Y]	3[Y]	4[Y]	5[Y]	6[Y]	7[Y]	8[Y]	9[Y]	10[Y]
 ColWidth	100	100	100	100	100	100	100	100	100	100	
 <com>
@@ -1092,96 +576,9 @@ WindowLabel		2
 99	99	-211.84	-43.3317	188.076	14.8601	25.8151	-16.3241	0	0	
 </data>
 </table>
-<multiLayer>
-Graph5	1	1	3/11/2025 4:19:33 PM
-geometry	71	408	472	430	
-WindowLabel		2
-Margins	5	5	5	5
-Spacing	5	5
-LayerCanvasSize	400	300
-Alignement	0	0
-<AlignPolicy>0</AlignPolicy>
-<CommonAxes>0</CommonAxes>
-<graph>
-ggeometry	3	4	442	352
-<PageGeometry>0.00666667	0.0110497	0.982222	0.972376</PageGeometry>
-PlotTitle		#000000	4228
-<Antialiasing>0</Antialiasing>
-<Autoscaling>1</Autoscaling>
-<ScaleFonts>1</ScaleFonts>
-<GridOnTop>0</GridOnTop>
-<MissingDataGap>1</MissingDataGap>
-Background	#ffffff	0
-Margin	0
-Border	0	#000000
-grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
-EnabledAxes	1	1	1	1	
-AxesTitles	%(?X)	%(?Y)		%(?Y)	
-AxesTitleColors	#000000	#000000	#000000	#000000	
-AxesTitleAlignment	5124	5124	5124	5124
-AxesTitleDistance	2	2	2	2
-InvertedTitle	0	0	0	0
-TitleFont	MS Shell Dlg 2	8	75	0	0	0
-ScaleFont0	MS Shell Dlg 2	7	75	0	0	0
-ScaleFont1	MS Shell Dlg 2	7	75	0	0	0
-ScaleFont2	MS Shell Dlg 2	7	75	0	0	0
-ScaleFont3	MS Shell Dlg 2	7	75	0	0	0
-AxisFont0	MS Shell Dlg 2	7	50	0	0	0
-AxisFont1	MS Shell Dlg 2	7	50	0	0	0
-AxisFont2	MS Shell Dlg 2	7	50	0	0	0
-AxisFont3	MS Shell Dlg 2	7	50	0	0	0
-AxesColors	#000000	#000000	#000000	#000000
-AxesNumberColors	#000000	#000000	#000000	#000000
-AxesBaseline	0	0	0	0	
-CanvasBackground	#ffffff	0
-curve	-	Table4_2	9	1	#000000	0	1	3	0	#000000	#000000	1	#000000	4	0	0	0	5000	-45387	18234	2	0	0	99	1
-scale	0	0	60	0	7	5	0	0
-scale	1	0	60	0	7	5	0	0
-scale	2	-40000	40000	0	5	0	0	0
-scale	3	-40000	40000	0	5	0	0	0
-LabelsFormat	0	6	0	6	0	6	0	6
-AxisType	0	0	0	0	
-MajorTicks	1	1	1	1
-MinorTicks	1	1	1	1
-TicksLength	5	9
-DrawAxesBackbone	1	1	1	1	1
-AxesLineWidth	1
-LabelsRotation	0	0	0	0
-LabelsPrefix				
-LabelsSuffix				
-TickLabelsSpace	4	4	4	4
-ShowTicksPolicy	0	0	0	0
-EnabledTickLabels	1	1	1	1
-<Legend>
-<Frame>1</Frame>
-<Color>#000000</Color>
-<FrameWidth>1</FrameWidth>
-<LineStyle>0</LineStyle>
-<x>-37593.984962406</x>
-<y>56.989966555184</y>
-<right>-20902.2556390977</right>
-<bottom>50.9698996655518</bottom>
-<attachTo>1</attachTo>
-<onTop>1</onTop>
-<visible>1</visible>
-<Text>
-\l(1)%(1)
-</Text>
-<Font>MS Shell Dlg 2	7	50	0	0	0</Font>
-<TextColor>#000000</TextColor>
-<Background>#ffffff</Background>
-<Alpha>0</Alpha>
-<Angle>0</Angle>
-<AutoUpdate>1</AutoUpdate>
-<TeXOutput>0</TeXOutput>
-</Legend>
-</graph>
-<LinkXAxes>0</LinkXAxes>
-<ScaleLayers>1</ScaleLayers>
-</multiLayer>
 <table>
 Table5	100	10	3/11/2025 4:50:42 PM
-geometry	638	492	445	220	
+geometry	638	482	445	220	
 header	1[X]	2[Y]	3[Y]	4[Y]	5[Y]	6[Y]	7[Y]	8[Y]	9[Y]	10[Y]
 ColWidth	100	100	100	100	100	100	100	100	100	100	
 <com>
@@ -1295,8 +692,638 @@ WindowLabel		2
 </data>
 </table>
 <multiLayer>
+Graph1	1	1	3/11/2025 1:32:52 PM
+geometry	31	-36	571	499	
+WindowLabel		2
+Margins	5	5	5	5
+Spacing	5	5
+LayerCanvasSize	400	300
+Alignement	0	0
+<AlignPolicy>0</AlignPolicy>
+<CommonAxes>0</CommonAxes>
+<graph>
+ggeometry	12	14	539	416
+<PageGeometry>0.0218579	0.0324826	0.981785	0.965197</PageGeometry>
+PlotTitle	Skewness vs Time (-1, 0.3) MOND	#000000	4228
+<Antialiasing>0</Antialiasing>
+<Autoscaling>1</Autoscaling>
+<ScaleFonts>1</ScaleFonts>
+<GridOnTop>0</GridOnTop>
+<MissingDataGap>1</MissingDataGap>
+Background	#ffffff	0
+Margin	0
+Border	0	#000000
+grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
+EnabledAxes	1	1	1	1	
+AxesTitles	Time (My)	Skewness		%(?Y)	
+AxesTitleColors	#000000	#000000	#000000	#000000	
+AxesTitleAlignment	5124	5124	5124	5124
+AxesTitleDistance	2	2	2	2
+InvertedTitle	0	0	0	0
+TitleFont	MS Shell Dlg 2	10	75	0	0	0
+ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
+AxisFont0	MS Shell Dlg 2	8	50	0	0	0
+AxisFont1	MS Shell Dlg 2	8	50	0	0	0
+AxisFont2	MS Shell Dlg 2	8	50	0	0	0
+AxisFont3	MS Shell Dlg 2	8	50	0	0	0
+AxesColors	#000000	#000000	#000000	#000000
+AxesNumberColors	#000000	#000000	#000000	#000000
+AxesBaseline	0	0	0	0	
+CanvasBackground	#ffffff	0
+curve	skews_1	skews_2	1	0	#000000	0	1	7	1	#000000	#000000	0	#000000	14	1	2	0	0	99	1
+<Function>
+<Type>0</Type>
+<Title>PolynomialFit1</Title>
+<Expression>a0+a1*x</Expression>
+<Variable>x</Variable>
+<Range>20	99</Range>
+<Points>100</Points>
+<Constant>a0	-0.487271270100797</Constant>
+<Constant>a1	-0.0041012584857009</Constant>
+<Style>0</Style>
+<LineStyle>1</LineStyle>
+<Pen>
+	<Color>#ff0000</Color>
+	<Style>0</Style>
+	<Width>1</Width>
+</Pen>
+<xAxis>2</xAxis>
+<yAxis>0</yAxis>
+<CurveType>0</CurveType>
+<Visible>1</Visible>
+</Function>
+<Function>
+<Type>0</Type>
+<Title>F1</Title>
+<Expression>0</Expression>
+<Variable>x</Variable>
+<Range>-20	100</Range>
+<Points>100</Points>
+<Style>0</Style>
+<LineStyle>1</LineStyle>
+<Pen>
+	<Color>#000000</Color>
+	<Style>0</Style>
+	<Width>1</Width>
+</Pen>
+<xAxis>2</xAxis>
+<yAxis>0</yAxis>
+<CurveType>0</CurveType>
+<Visible>1</Visible>
+</Function>
+scale	0	-1	1	0	5	5	0	0
+scale	1	-1	1	0	5	5	0	0
+scale	2	-40	120	0	9	5	0	0
+scale	3	-40	120	0	9	5	0	0
+LabelsFormat	0	6	0	6	0	6	0	6
+AxisType	0	0	0	0	
+MajorTicks	1	1	1	1
+MinorTicks	1	1	1	1
+TicksLength	5	9
+DrawAxesBackbone	1	1	1	1	1
+AxesLineWidth	1
+LabelsRotation	0	0	0	0
+LabelsPrefix				
+LabelsSuffix				
+TickLabelsSpace	4	4	4	4
+ShowTicksPolicy	0	0	0	0
+EnabledTickLabels	1	1	1	1
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-29.145728643216</x>
+<y>0.91275167785235</y>
+<right>29.5477386934673</right>
+<bottom>0.583892617449664</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+Y=-0.487-0.004X
+\l(5)y = 0
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>1</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>33.56783919598</x>
+<y>0.85906040268456</y>
+<right>66.1306532663317</right>
+<bottom>0.657718120805369</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+R<sup>2</sup> = 0.9
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>0</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-18.693467336683</x>
+<y>0.35570469798658</y>
+<right>109.145728643216</right>
+<bottom>0.154362416107383</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+Mean : [22:100]	-0.7328
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>0</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+</graph>
+<LinkXAxes>0</LinkXAxes>
+<ScaleLayers>1</ScaleLayers>
+</multiLayer>
+<multiLayer>
+Graph2	1	1	3/11/2025 2:23:45 PM
+geometry	623	0	571	499	
+WindowLabel		2
+Margins	5	5	5	5
+Spacing	5	5
+LayerCanvasSize	400	300
+Alignement	0	0
+<AlignPolicy>0</AlignPolicy>
+<CommonAxes>0</CommonAxes>
+<graph>
+ggeometry	5	5	539	416
+<PageGeometry>0.00910747	0.0116009	0.981785	0.965197</PageGeometry>
+PlotTitle	Skewness vs Time (-1, 0) MOND	#000000	4228
+<Antialiasing>0</Antialiasing>
+<Autoscaling>1</Autoscaling>
+<ScaleFonts>1</ScaleFonts>
+<GridOnTop>0</GridOnTop>
+<MissingDataGap>1</MissingDataGap>
+Background	#ffffff	0
+Margin	0
+Border	0	#000000
+grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
+EnabledAxes	1	1	1	1	
+AxesTitles	%(?X)	%(?Y)		%(?Y)	
+AxesTitleColors	#000000	#000000	#000000	#000000	
+AxesTitleAlignment	5124	5124	5124	5124
+AxesTitleDistance	2	2	2	2
+InvertedTitle	0	0	0	0
+TitleFont	MS Shell Dlg 2	10	75	0	0	0
+ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
+AxisFont0	MS Shell Dlg 2	8	50	0	0	0
+AxisFont1	MS Shell Dlg 2	8	50	0	0	0
+AxisFont2	MS Shell Dlg 2	8	50	0	0	0
+AxisFont3	MS Shell Dlg 2	8	50	0	0	0
+AxesColors	#000000	#000000	#000000	#000000
+AxesNumberColors	#000000	#000000	#000000	#000000
+AxesBaseline	0	0	0	0	
+CanvasBackground	#ffffff	0
+curve	Table1_1	Table1_2	1	0	#000000	0	1	7	1	#000000	#000000	0	#000000	14	1	2	0	0	99	1
+<Function>
+<Type>0</Type>
+<Title>PolynomialFit1</Title>
+<Expression>a0+a1*x</Expression>
+<Variable>x</Variable>
+<Range>0	99</Range>
+<Points>100</Points>
+<Constant>a0	0.105290836352475</Constant>
+<Constant>a1	-0.00167301610934293</Constant>
+<Style>0</Style>
+<LineStyle>1</LineStyle>
+<Pen>
+	<Color>#ff0000</Color>
+	<Style>0</Style>
+	<Width>1</Width>
+</Pen>
+<xAxis>2</xAxis>
+<yAxis>0</yAxis>
+<CurveType>0</CurveType>
+<Visible>1</Visible>
+</Function>
+<Function>
+<Type>0</Type>
+<Title>F1</Title>
+<Expression>0</Expression>
+<Variable>x</Variable>
+<Range>0	80</Range>
+<Points>100</Points>
+<Style>0</Style>
+<LineStyle>1</LineStyle>
+<Pen>
+	<Color>#000000</Color>
+	<Style>0</Style>
+	<Width>1</Width>
+</Pen>
+<xAxis>2</xAxis>
+<yAxis>0</yAxis>
+<CurveType>0</CurveType>
+<Visible>1</Visible>
+</Function>
+scale	0	-1	1	0	5	5	0	0
+scale	1	-1	1	0	5	5	0	0
+scale	2	-20	100	0	7	5	0	0
+scale	3	-20	100	0	7	5	0	0
+LabelsFormat	0	6	0	6	0	6	0	6
+AxisType	0	0	0	0	
+MajorTicks	1	1	1	1
+MinorTicks	1	1	1	1
+TicksLength	5	9
+DrawAxesBackbone	1	1	1	1	1
+AxesLineWidth	1
+LabelsRotation	0	0	0	0
+LabelsPrefix				
+LabelsSuffix				
+TickLabelsSpace	4	4	4	4
+ShowTicksPolicy	0	0	0	0
+EnabledTickLabels	1	1	1	1
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-13.082706766917</x>
+<y>0.89297658862876</y>
+<right>14.0401146131805</right>
+<bottom>0.703180212014134</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+Y=0.105-0.0017X
+\l(3)y = 0
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>1</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>37.889447236181</x>
+<y>0.78523489932886</y>
+<right>92.7638190954774</right>
+<bottom>0.583892617449664</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+Mean: 0.02247653894
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>0</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+</graph>
+<LinkXAxes>0</LinkXAxes>
+<ScaleLayers>1</ScaleLayers>
+</multiLayer>
+<multiLayer>
+Graph3	1	1	3/11/2025 2:29:25 PM
+geometry	1203	-2	571	499	
+WindowLabel		2
+Margins	5	5	5	5
+Spacing	5	5
+LayerCanvasSize	400	300
+Alignement	0	0
+<AlignPolicy>0</AlignPolicy>
+<CommonAxes>0</CommonAxes>
+<graph>
+ggeometry	5	5	539	416
+<PageGeometry>0.00910747	0.0116009	0.981785	0.965197</PageGeometry>
+PlotTitle	Skewness vs Time (-1, 0.3) Newt	#000000	4228
+<Antialiasing>0</Antialiasing>
+<Autoscaling>1</Autoscaling>
+<ScaleFonts>1</ScaleFonts>
+<GridOnTop>0</GridOnTop>
+<MissingDataGap>1</MissingDataGap>
+Background	#ffffff	0
+Margin	0
+Border	0	#000000
+grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
+EnabledAxes	1	1	1	1	
+AxesTitles	%(?X)	%(?Y)		%(?Y)	
+AxesTitleColors	#000000	#000000	#000000	#000000	
+AxesTitleAlignment	5124	5124	5124	5124
+AxesTitleDistance	2	2	2	2
+InvertedTitle	0	0	0	0
+TitleFont	MS Shell Dlg 2	10	75	0	0	0
+ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
+AxisFont0	MS Shell Dlg 2	8	50	0	0	0
+AxisFont1	MS Shell Dlg 2	8	50	0	0	0
+AxisFont2	MS Shell Dlg 2	8	50	0	0	0
+AxisFont3	MS Shell Dlg 2	8	50	0	0	0
+AxesColors	#000000	#000000	#000000	#000000
+AxesNumberColors	#000000	#000000	#000000	#000000
+AxesBaseline	0	0	0	0	
+CanvasBackground	#ffffff	0
+curve	Table2_1	Table2_2	1	0	#000000	0	1	7	1	#000000	#000000	0	#000000	14	1	2	0	0	99	1
+<Function>
+<Type>0</Type>
+<Title>PolynomialFit1</Title>
+<Expression>a0+a1*x</Expression>
+<Variable>x</Variable>
+<Range>0	99</Range>
+<Points>100</Points>
+<Constant>a0	-0.021818271859406</Constant>
+<Constant>a1	0.00193015101938194</Constant>
+<Style>0</Style>
+<LineStyle>1</LineStyle>
+<Pen>
+	<Color>#ff0000</Color>
+	<Style>0</Style>
+	<Width>1</Width>
+</Pen>
+<xAxis>2</xAxis>
+<yAxis>0</yAxis>
+<CurveType>0</CurveType>
+<Visible>1</Visible>
+</Function>
+scale	0	-1	1	0	5	5	0	0
+scale	1	-1	1	0	5	5	0	0
+scale	2	-20	100	0	7	5	0	0
+scale	3	-20	100	0	7	5	0	0
+LabelsFormat	0	6	0	6	0	6	0	6
+AxisType	0	0	0	0	
+MajorTicks	1	1	1	1
+MinorTicks	1	1	1	1
+TicksLength	5	9
+DrawAxesBackbone	1	1	1	1	1
+AxesLineWidth	1
+LabelsRotation	0	0	0	0
+LabelsPrefix				
+LabelsSuffix				
+TickLabelsSpace	4	4	4	4
+ShowTicksPolicy	0	0	0	0
+EnabledTickLabels	1	1	1	1
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-16.992481203008</x>
+<y>0.93311036789298</y>
+<right>14.0401146131805</right>
+<bottom>0.703180212014134</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+Y=-0.02+0.0019X
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>1</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-0.10050251256281</x>
+<y>0.65771812080537</y>
+<right>52.0603015075377</right>
+<bottom>0.456375838926175</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+Mean: 0.0737242036
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>0</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+</graph>
+<LinkXAxes>0</LinkXAxes>
+<ScaleLayers>1</ScaleLayers>
+</multiLayer>
+<multiLayer>
+Graph4	1	1	3/11/2025 4:11:20 PM
+geometry	1204	337	562	481	
+WindowLabel		2
+Margins	5	5	5	5
+Spacing	5	5
+LayerCanvasSize	400	300
+Alignement	0	0
+<AlignPolicy>0</AlignPolicy>
+<CommonAxes>0</CommonAxes>
+<graph>
+ggeometry	6	6	530	400
+<PageGeometry>0.0111111	0.0145278	0.981481	0.968523</PageGeometry>
+PlotTitle		#000000	4228
+<Antialiasing>0</Antialiasing>
+<Autoscaling>1</Autoscaling>
+<ScaleFonts>1</ScaleFonts>
+<GridOnTop>0</GridOnTop>
+<MissingDataGap>1</MissingDataGap>
+Background	#ffffff	0
+Margin	0
+Border	0	#000000
+grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
+EnabledAxes	1	1	1	1	
+AxesTitles	%(?X)	%(?Y)		%(?Y)	
+AxesTitleColors	#000000	#000000	#000000	#000000	
+AxesTitleAlignment	5124	5124	5124	5124
+AxesTitleDistance	2	2	2	2
+InvertedTitle	0	0	0	0
+TitleFont	MS Shell Dlg 2	10	75	0	0	0
+ScaleFont0	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont1	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont2	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont3	MS Shell Dlg 2	8	75	0	0	0
+AxisFont0	MS Shell Dlg 2	8	50	0	0	0
+AxisFont1	MS Shell Dlg 2	8	50	0	0	0
+AxisFont2	MS Shell Dlg 2	8	50	0	0	0
+AxisFont3	MS Shell Dlg 2	8	50	0	0	0
+AxesColors	#000000	#000000	#000000	#000000
+AxesNumberColors	#000000	#000000	#000000	#000000
+AxesBaseline	0	0	0	0	
+CanvasBackground	#ffffff	0
+curve	-	Table3_2	9	1	#000000	0	1	3	0	#000000	#000000	1	#000000	4	0	0	1	610.6	-3152	2954	2	0	0	99	1
+scale	0	0	50	0	6	5	0	0
+scale	1	0	50	0	6	5	0	0
+scale	2	-3000	3000	0	7	5	0	0
+scale	3	-3000	3000	0	7	5	0	0
+LabelsFormat	0	6	0	6	0	6	0	6
+AxisType	0	0	0	0	
+MajorTicks	1	1	1	1
+MinorTicks	1	1	1	1
+TicksLength	5	9
+DrawAxesBackbone	1	1	1	1	1
+AxesLineWidth	1
+LabelsRotation	0	0	0	0
+LabelsPrefix				
+LabelsSuffix				
+TickLabelsSpace	4	4	4	4
+ShowTicksPolicy	0	0	0	0
+EnabledTickLabels	1	1	1	1
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-849.62406015038</x>
+<y>48.327759197324</y>
+<right>-1360.24844720497</right>
+<bottom>42.9292929292929</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+\l(1)%(1)
+</Text>
+<Font>MS Shell Dlg 2	8	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>1</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+</graph>
+<LinkXAxes>0</LinkXAxes>
+<ScaleLayers>1</ScaleLayers>
+</multiLayer>
+<multiLayer>
+Graph5	1	1	3/11/2025 4:19:33 PM
+geometry	71	398	472	430	active
+WindowLabel		2
+Margins	5	5	5	5
+Spacing	5	5
+LayerCanvasSize	400	300
+Alignement	0	0
+<AlignPolicy>0</AlignPolicy>
+<CommonAxes>0</CommonAxes>
+<graph>
+ggeometry	3	4	442	352
+<PageGeometry>0.00666667	0.0110497	0.982222	0.972376</PageGeometry>
+PlotTitle		#000000	4228
+<Antialiasing>0</Antialiasing>
+<Autoscaling>1</Autoscaling>
+<ScaleFonts>1</ScaleFonts>
+<GridOnTop>0</GridOnTop>
+<MissingDataGap>1</MissingDataGap>
+Background	#ffffff	0
+Margin	0
+Border	0	#000000
+grid	0	0	0	0	#0000ff	0	0.5	#a0a0a4	2	0.4	#0000ff	0	0.5	#a0a0a4	2	0.4	0	0	2	0	0
+EnabledAxes	1	1	1	1	
+AxesTitles	%(?X)	%(?Y)		%(?Y)	
+AxesTitleColors	#000000	#000000	#000000	#000000	
+AxesTitleAlignment	5124	5124	5124	5124
+AxesTitleDistance	2	2	2	2
+InvertedTitle	0	0	0	0
+TitleFont	MS Shell Dlg 2	8	75	0	0	0
+ScaleFont0	MS Shell Dlg 2	7	75	0	0	0
+ScaleFont1	MS Shell Dlg 2	7	75	0	0	0
+ScaleFont2	MS Shell Dlg 2	7	75	0	0	0
+ScaleFont3	MS Shell Dlg 2	7	75	0	0	0
+AxisFont0	MS Shell Dlg 2	7	50	0	0	0
+AxisFont1	MS Shell Dlg 2	7	50	0	0	0
+AxisFont2	MS Shell Dlg 2	7	50	0	0	0
+AxisFont3	MS Shell Dlg 2	7	50	0	0	0
+AxesColors	#000000	#000000	#000000	#000000
+AxesNumberColors	#000000	#000000	#000000	#000000
+AxesBaseline	0	0	0	0	
+CanvasBackground	#ffffff	0
+curve	-	Table4_2	9	1	#000000	0	1	3	0	#000000	#000000	1	#000000	4	0	0	0	5000	-45387	18234	2	0	0	99	1
+scale	0	0	60	0	7	5	0	0
+scale	1	0	60	0	7	5	0	0
+scale	2	-40000	40000	0	5	0	0	0
+scale	3	-40000	40000	0	5	0	0	0
+LabelsFormat	0	6	0	6	0	6	0	6
+AxisType	0	0	0	0	
+MajorTicks	1	1	1	1
+MinorTicks	1	1	1	1
+TicksLength	5	9
+DrawAxesBackbone	1	1	1	1	1
+AxesLineWidth	1
+LabelsRotation	0	0	0	0
+LabelsPrefix				
+LabelsSuffix				
+TickLabelsSpace	4	4	4	4
+ShowTicksPolicy	0	0	0	0
+EnabledTickLabels	1	1	1	1
+<Legend>
+<Frame>1</Frame>
+<Color>#000000</Color>
+<FrameWidth>1</FrameWidth>
+<LineStyle>0</LineStyle>
+<x>-37593.984962406</x>
+<y>56.989966555184</y>
+<right>-10000</right>
+<bottom>49.7211155378486</bottom>
+<attachTo>1</attachTo>
+<onTop>1</onTop>
+<visible>1</visible>
+<Text>
+\l(1)%(1)
+</Text>
+<Font>MS Shell Dlg 2	7	50	0	0	0</Font>
+<TextColor>#000000</TextColor>
+<Background>#ffffff</Background>
+<Alpha>0</Alpha>
+<Angle>0</Angle>
+<AutoUpdate>1</AutoUpdate>
+<TeXOutput>0</TeXOutput>
+</Legend>
+</graph>
+<LinkXAxes>0</LinkXAxes>
+<ScaleLayers>1</ScaleLayers>
+</multiLayer>
+<multiLayer>
 Graph6	1	1	3/11/2025 4:50:52 PM
-geometry	633	346	517	469	
+geometry	633	336	517	469	
 WindowLabel		2
 Margins	5	5	5	5
 Spacing	5	5
@@ -1361,8 +1388,8 @@ EnabledTickLabels	1	1	1	1
 <LineStyle>0</LineStyle>
 <x>-1649.1228070175</x>
 <y>57.993311036789</y>
-<right>1824.56140350877</right>
-<bottom>52.1739130434783</bottom>
+<right>-2154.92957746479</right>
+<bottom>51.0104529616725</bottom>
 <attachTo>1</attachTo>
 <onTop>1</onTop>
 <visible>1</visible>
@@ -1381,6 +1408,22 @@ EnabledTickLabels	1	1	1	1
 <LinkXAxes>0</LinkXAxes>
 <ScaleLayers>1</ScaleLayers>
 </multiLayer>
+<TableStatistics>
+Table6	skews	col	3/12/2025 10:18:01 AM
+Targets	1
+Range	21	99
+ColStatType	2	3	5	6	7	8	9	10	11	12	13	14	15
+geometry	0	787	1110	252	minimized	
+header	Col[X]	Rows[Y]	Mean[Y]	StandardDev[Y]	StandardError[yEr]	Variance[Y]	Sum[Y]	iMax[Y]	Max[Y]	iMin[Y]	Min[Y]	N[Y]	Median[Y]
+ColWidth	100	100	145	100	100	100	100	100	100	100	100	100	100	
+<com>
+</com>
+ColType	0;0/13	1;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13	0;0/13
+ReadOnlyColumn	0	0	0	0	0	0	0	0	0	0	0	0	0
+HiddenColumn	0	0	0	0	0	0	0	0	0	0	0	0	0
+Comments	Column Name	Rows Included	Mean	Standard Deviation	Standard Error	Variance	Sum	Index of Maximum Value	Maximum Value	Index of Minimum Value	Minimum Value	Number of Points	Median	
+WindowLabel	Column Statistics of skews	2
+</TableStatistics>
 <open>1</open>
 <log>
 [3/11/2025 2:22:02 PM	Plot: ''Graph1'']
@@ -1502,4 +1545,5 @@ Adjusted R^2 = 0.897863796101077
 RMSE (Root Mean Squared Error) = 0.031891302220294
 RSS (Residual Sum of Squares) = 0.0793303022698782
 ---------------------------------------------------------------------------------------
+
 </log>

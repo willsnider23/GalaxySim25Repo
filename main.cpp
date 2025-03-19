@@ -127,8 +127,8 @@ printInitConds(Model& modelStats) {
     if (settings::lin_dist_r != -1) cout << "\tLinearly Distributed R: \t" << settings::lin_dist_r << " pc (max r)" << endl;
     if (settings::lin_dist_phi != -1) cout << "\tLinearly Distributed Phi: \t" << settings::lin_dist_phi << " groups" << endl;
     if (settings::CenterOfMass) cout << "\tCoM Tracking: \tON" << endl;
-    if (settings::trackTidalR) cout << "\Tidal R Tracking: \tON" << endl;
-    if (settings::trackSkews) cout << "\Skew Tracking: \tON" << endl;
+    if (settings::trackTidalR) cout << "\tTidal R Tracking: \tON" << endl;
+    if (settings::trackSkews) cout << "\tSkew Tracking: \tON" << endl;
     if (settings::blackHole) cout << "\tBlackhole: \tON" << endl;
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
