@@ -1,90 +1,97 @@
 dSph data
 
+Legend:
+	lum --> luminosity, in units of solar luminosity
+	r_half --> half-light radius, parsecs
+	ML --> mass to light ratio
+	M_mw --> mass of the milky way, in units of solar mass
+	R_mw --> distance from the milky way, in uts of kpc
+
 M60-UCD1
-lum = 4.1d7
-r_half = 24.d0
-ML = 3.6d0
-M_mw = 6.5d10  
-R_mw = 149.d3
-MBlack = 2.1d7 !+1.4d7/-7.d6
+lum = 4.1e7
+r_half = 24.0e0
+ML = 3.6e0
+M_mw = 6.5e10  
+R_mw = 149.0e3
+MBlack = 2.1e7 !+1.4e7/-7.e6
 -
 Fornax UCD3
-lum = 1.7d7
-r_half = 50.d0
-M_L = 3.d0
-M_mw = 6.5d10  
-R_mw = 149.d3
-MBlack = 5.1d7 !3.3d6 !+1.4d6/-1.2d6
+lum = 1.7e7
+r_half = 50.0e0
+M_L = 3.0e0
+M_mw = 6.5e10  
+R_mw = 149.0e3
+MBlack = 5.1e7 !3.3e6 !+1.4e6/-1.2e6
 -
 VUCD1
-lum = 9.9d6
-r_half = 18.d0
-ML = 1.d0
-M_mw = 6.5d10  
-R_mw = 149.d3
+lum = 9.ed6
+r_half = 18.0e0
+ML = 1.0e0
+M_mw = 6.5e10  
+R_mw = 149.0e3
 MBlack = 
 -
 M59c0
-lum = 1.6d7
-r_half = 32.d0
-ML = 1.d0
-M_mw = 6.5d10  
-R_mw = 149.d3
+lum = 1.6e7
+r_half = 32.0e0
+ML = 1.0e0
+M_mw = 6.5e10  
+R_mw = 149.0e3
 MBlack = 
 -
 Leo I
-lum = 5.5d6
-r_half = 298.d0
-R_mw = 258.d3
-M_mw = 6.5d10  
-ML = 1.5d0
+lum = 5.5e6
+r_half = 298.0e0
+R_mw = 258.0e3
+M_mw = 6.5e10  
+ML = 1.5e0
 -
 Fornax (new, from Lelli et al.)
 lum = 2.04e7
-r_half = 792.d0
-M_L = 1.0
+r_half = 792.0e0
+M_L = 1.0e0
 M_mw = 6.5e10  
 R_mw = 149e3
 -
 NGC1052-DF2
-lum = 1.1d8
-r_half = 2.2d3
-ML = 2.d0
-M_mw = 1.d11
-R_mw = 80.d3
+lum = 1.1e8
+r_half = 2.2e3
+ML = 2.0e0
+M_mw = 1.0e11
+R_mw = 80.0e3
 -
 NGC1052-DF4
-lum = 1.7d8
-r_half = 1.6d3
-ML = 2.d0
-M_mw = 1.d11
-R_mw = 165.d3
+lum = 1.7e8
+r_half = 1.6e3
+ML = 2.0e0
+M_mw = 1.0e11
+R_mw = 165.0e3
 -
 Crater II
 lum = 1.6e5
-r_half = 1421.0   !1066.d0 this is half-light radius
-M_L = 2.0
+r_half = 1421.0   !1066.0e0 this is half-light radius
+M_L = 2.0e0
 M_mw = 6.5e10
 R_mw = 120e3
 -
 Segue I
-lum = 346.7d0
-r_half = 28.d0
-R_mw = 28.d3
-M_L = 10.d0
+lum = 346.7e0
+r_half = 28.0e0
+R_mw = 28.0e3
+M_L = 10.0e0
 -
 Andromeda XIX
-lum = 3.31d5
-r_half = 1799.d0
-R_mw = 116.d3   
-M_mw = 2.d0 * M_mw  !need baryonic mass of Andromeda, for now take twice M_mw
-M_L = 2.d0
+lum = 3.31e5
+r_half = 1799.0e0
+R_mw = 116.0e3   
+M_mw = 2.0e0 * M_mw  !need baryonic mass of Andromeda, for now take twice M_mw
+M_L = 2.0e0
 -
 Carina
-lum = 2.4d5
-r_half = 321.d0
-R_mw = 107.d3
-M_L = 5.d0
+lum = 2.4e5
+r_half = 321.0e0
+R_mw = 107.0e3
+M_L = 5.0e0
 -
 Leo II (new, from Lelli et al.)
 lum = 7.41e5
@@ -94,45 +101,45 @@ M_mw = 6.5e10
 R_mw = 236e3
 -
 Sculptor
-lum = 1.4d6
-r_half = 347.d0
-R_mw = 86.d3
-M_L = 4.d0
+lum = 1.4e6
+r_half = 347.0e0
+R_mw = 86.0e3
+M_L = 4.0e0
 -
 Draco
-lum = 2.7d5
-r_half = 261.d0
-R_mw = 76.d3
-M_L = 20.d0
+lum = 2.7e5
+r_half = 261.0e0
+R_mw = 76.0e3
+M_L = 20.0e0
 -
 Sextans (new)
-lum = 4.37d5
-r_half = 748.d0
-R_mw = 89.d3
-M_L = 2.d0
+lum = 4.37e5
+r_half = 748.0e0
+R_mw = 89.0e3
+M_L = 2.0e0
 -
 Ursa Minor
-lum = 2.0d5
-r_half = 373.d0
-R_mw = 78.d3
-M_L = 31.d0
+lum = 2.0e5
+r_half = 373.0e0
+R_mw = 78.0e3
+M_L = 31.0e0
 -
 NGC 2419 Globular Cluster
-lum = 9.d5
-r_half = 23.d0
-R_mw = 87.5d3
-M_L = 1.d0
+lum = 9.0e5
+r_half = 23.0e0
+R_mw = 87.5e3
+M_L = 1.0e0
 -
 NGC1052-DF2
-lum = 1.1d8
-r_half = 2.2d3
-M_L = 2.d0
-M_mw = 1.d11  ! mass of NGC1052
-R_mw = 80.d3
+lum = 1.1e8
+r_half = 2.2e3
+M_L = 2.0e0
+M_mw = 1.0e11  ! mass of NGC1052
+R_mw = 80.0e3
 -
 ToyModel
 lum = 1.0e7
-r_half = 500.0
+r_half = 500.0e0
 M_L = 1.0
 R_mw = 200.0e3
 M_mw = 1.0e15
