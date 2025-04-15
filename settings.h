@@ -31,7 +31,8 @@ namespace settings {
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
     const bool MOND = false;                  // Modified Newtonian Dymanics switch
-    const bool EFE = true;                   // External Field Effect switch
+    const bool extField = true;              // External Field switch
+        const bool diverging = true;         // divergence of ext field
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
     const bool g_ratios = true;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
@@ -47,7 +48,7 @@ namespace settings {
     */ 
     const int integ_acc = 0;
     // Data Tracking
-    const bool CenterOfMass = true;          // tracks center of mass position
+    const bool CenterOfMass = true;          // tracks center of mass
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
     const bool trackSkews = true;            // records skew param at every console output
     const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity

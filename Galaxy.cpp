@@ -24,7 +24,7 @@ Galaxy::Galaxy(Model& model) {
         r_half = model["r_half"];
         a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
         r_tidal = model["r_tidal"];
-        if (settings::EFE) { 
+        if (settings::extField) { 
             host_R = model["R_mw"]; 
             host_M = model["M_mw"];
         } else {

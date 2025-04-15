@@ -85,7 +85,7 @@ void setModelStats(Model& stats) {
     stats["mass"] = settings::toy_mass;
     stats["r_half"] = sqrt(consts::G * settings::toy_mass / (2.0 * consts::a_mond * pow(10, log_int_rat)));
 
-    if (settings::EFE) {
+    if (settings::extField) {
         double ext_rat;
 
         cout << "Enter dynamic ge/a0 at CoM: ";
@@ -132,8 +132,8 @@ printInitConds(Model& modelStats) {
     if (settings::blackHole) cout << "\tBlackhole: \tON" << endl;
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
-    if (settings::EFE) {
-        cout << "\tEFE: \t\tON" << endl;
+    if (settings::extField) {
+        cout << "\tExt Field: \t\tON" << endl;
         cout << "\t\tHost Mass: \t" << modelStats["M_mw"] << " solar masses" << endl;
         cout << "\t\tTidal Radius: \t" << modelStats["r_tidal"] << " pc" << endl;
     }
@@ -358,7 +358,7 @@ double
 dispPredHaghi(double M, double r_half, double hostR, double hostM) {
     double x = log10((consts::G * M / (2 * pow(r_half, 2))) / consts::a_mond);
     double sigmaM = pow((4.0 / 81.0) * consts::G * M * consts::a_mond, 0.25) * pow(1 + 0.56 * exp(3.02*x),0.184);
-    if (!settings::EFE) {
+    if (!settings::extField) {
         return sigmaM;
     }  else {
         double a_e = (consts::G * hostM) / pow(hostR, 2);
@@ -463,7 +463,7 @@ int main(int argc, char* argv[]) {
                 if (settings::MOND) {
                     double HaghiPred = dispPredHaghi(dsph.getMass(), dsph.getRHalf(), dsph.getHostDist(), dsph.getHostMass());
                     cout << "Haghi Disp. Prediction: " << HaghiPred << endl;
-                    if (!settings::EFE) {
+                    if (!settings::extField) {
                         double sigmaIsoM = pow((4 * consts::G * dsph.getMass() * consts::a_mond) / 81, 0.25); // (Milgrom 1994; McGaugh& Milgrom 2013)
                         cout << "Milgram Isolated MOND disp prediction: " << sigmaIsoM << endl;
                     }

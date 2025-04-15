@@ -336,7 +336,7 @@ MONDCorrections(vector<double>& pos, vector<double>& vel, vector<vector<double>>
 
     PosMat corrections;
     // Isolated MOND case
-    if (!settings::EFE) {
+    if (!settings::extField) {
         double gni_mag = calcMag(gni);
         double y = gni_mag / consts::a_mond;
         double nu = LelliNu(y);
@@ -438,7 +438,7 @@ Star::a_and_adot(double r_half, double baryonCloudMass, double host_R, double ho
         a_i[i] = -(consts::G)*(pos[i] * factor_1);
         j_i[i] = (consts::G)*(-vel[i] * factor_1 + pos[i] * factor_2 - pos[i] * factor_3);
     }
-    if (settings::EFE) {
+    if (settings::extField) {
         // External field on star
         vector<vector<double>> ext_field = externalField(pos, vel, host_R, host_M);
         a_e = ext_field[0];
