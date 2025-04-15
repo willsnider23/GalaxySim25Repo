@@ -88,14 +88,14 @@ void setModelStats(Model& stats) {
     if (settings::extField) {
         double ext_rat;
 
-        cout << "Enter dynamic ge/a0 at CoM: ";
+        cout << "Enter newtonian ge/a0 at CoM: ";
         cin >> ext_rat;
         stats["ext_rat"] = ext_rat;
         cout << endl;
 
         stats["R_mw"] = settings::toy_hostR;
-        double ext_rat_N = pow(ext_rat, 2) / (1 + ext_rat);
-        stats["M_mw"] = (ext_rat_N * consts::a_mond) * pow(settings::toy_hostR, 2) / consts::G;
+        // double ext_rat_N = pow(ext_rat, 2) / (1 + ext_rat);  -- used if ext_rat is dynamic/MOND ratio
+        stats["M_mw"] = (ext_rat * consts::a_mond) * pow(settings::toy_hostR, 2) / consts::G;
 
         // Tidal Radius Eq  (Banik 2022)
         stats["r_tidal"] = pow(2.0, 1.0 / 6.0) * stats["R_mw"] * pow(stats["mass"] / stats["M_mw"], 1.0 / 3.0) / 3.0;
