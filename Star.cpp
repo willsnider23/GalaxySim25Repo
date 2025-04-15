@@ -439,15 +439,18 @@ Star::a_and_adot(double r_half, double baryonCloudMass, double host_R, double ho
         j_i[i] = (consts::G)*(-vel[i] * factor_1 + pos[i] * factor_2 - pos[i] * factor_3);
     }
     if (settings::extField) {
-        // External field on star
-        vector<vector<double>> ext_field = externalField(pos, vel, host_R, host_M);
-        a_e = ext_field[0];
-        j_e = ext_field[1];
-
-        // External field on CoM (origin for now)
+        // External field on CoM
         vector<double> a_CoM = COM[2];
         vector<double> j_CoM = COM[3];
 
+        // External field on star
+        vector<vector<double>> ext_field;
+        if (settings::diverging) ext_field = externalField(pos, vel, host_R, host_M);
+        else ext_field = { COM[2], COM[3] };
+        a_e = ext_field[0];
+        j_e = ext_field[1];
+
+        // Integrated acceleration and jerk
         for (int i = 0; i < 3; i++) {
             // total acc on star
             a_t[i] = a_i[i] + a_e[i];
@@ -471,9 +474,10 @@ Star::a_and_adot(double r_half, double baryonCloudMass, double host_R, double ho
         j = j_i;
     }
 
-    // Set of int, ext, and tot accelerations and jerks for easier transport
-    vector<vector<double>> a_and_j = { a_i, a_e, a_t, j_i, j_e, j_t };
     if (settings::MOND) {
+        // Set of int, ext, and tot accelerations and jerks for easier transport
+        vector<vector<double>> a_and_j = { a_i, a_e, a_t, j_i, j_e, j_t };
+
         PosMat corrections = MONDCorrections(pos, vel, a_and_j, COM);
         a = corrections[0];
         j = corrections[1];

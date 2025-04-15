@@ -30,7 +30,7 @@ namespace settings {
             dooubles: off = -1
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
-    const bool MOND = false;                  // Modified Newtonian Dymanics switch
+    const bool MOND = false;                 // Modified Newtonian Dymanics switch
     const bool extField = true;              // External Field switch
         const bool diverging = true;         // divergence of ext field
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
@@ -42,11 +42,8 @@ namespace settings {
     /* Integrated Acceleration:     
     *   0 = gi + ge_star = g_total (orbiting)
     *   1 = g_total - ge_COM       (tidal)
-    *     v Only different in MOND v
-    *   2 = gi + ge_star - ge_star (no tides)                *** not implemented ***
-    *   3 = gi + ge_COM - ge_COM   (host galaxy approx)      *** not implemented ***
     */ 
-    const int integ_acc = 0;
+    const int integ_acc = 1;
     // Data Tracking
     const bool CenterOfMass = true;          // tracks center of mass
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
