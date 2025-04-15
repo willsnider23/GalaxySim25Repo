@@ -9,6 +9,7 @@ N = 0           #Number of bodies
 positions = []  #To store the position vector of each body [x, y, z]
 datarray = []   #2D array to store all position values, used to update body positions after each output section
 time = 0        #Time of current output section
+prev_time = 0   #Prev output time
 Nbod = []       #List of bodies used by visualpython to draw animation frames
 outputNum = 0   #Counter tracking which output section is being read
 bound = []
@@ -27,7 +28,7 @@ ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=1000, thickness=4, color=vi
 ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=2000, thickness=4, color=visual.color.red)
 #ring = visual.ring(pos=(2000,0,0), axis=(0,0,1), radius=500, thickness=25, color=visual.color.white)
 #ring = visual.ring(pos=(2000,0,0), axis=(0,1,0), radius=500, thickness=25, color=visual.color.white)
-# L=visual.label(text = ' ' , pos=(0, -1100, 0), height = 10, color=visual.color.yellow)
+#L=visual.label(text = ' ' , pos=(0, -1100, 0), height = 10, color=visual.color.yellow)
 
 #Main Program#
 linenum = 1
@@ -41,16 +42,22 @@ while line != "end":
     # At the start of each output block, update the display time and the number of bodies, N
     # then increment the outputHead tracker
     if linenum == outputHead:
-        # time = float(values[0])
-        N = int(values[1])
         outputNum = outputNum + 1
-        # L.text=time
+        if outputNum == 1:
+            prev_time = time
+        time = float(values[0])
+        N = int(values[1])
+        # read COM position and enter as first object in array
+        COM_vx = float(values[3])
+        COM_vy = float(values[4])
+        COM_vz = float(values[5])
+        #L.text=time
         outputHead = outputHead + N + 1
     # Within each output block, for each star read the position coordinates (x, y, z)
     else:
-        positions.append(float(values[1]))
-        positions.append(float(values[2]))
-        positions.append(float(values[3]))
+        positions.append(float(values[1])) #- COM_vx*(time - prev_time))
+        positions.append(float(values[2])) #- COM_vy*(time - prev_time))
+        positions.append(float(values[3])) #- COM_vz*(time - prev_time))
         datarray.append(positions)
         if outputNum == 1:
             Nbod.append(visual.sphere(pos=(positions[0],positions[1],positions[2]),radius=20,color=(1,1,1),make_trail=1,retain=100))
