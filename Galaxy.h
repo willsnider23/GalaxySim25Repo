@@ -25,6 +25,7 @@ class Galaxy {
     double baryonCloudMass;
     double r_half, a_s, r_tidal;
     double host_R, host_M;
+    double Tcross;
     // centerOfMass pos, vel, acc, and jerk
     PosMat centerOfMass = { {}, {}, {}, {} };
     double skewness;
@@ -60,6 +61,8 @@ public:
     calcAnisotropyFactor();
     double
     getGeff() const;
+    double 
+    getTcross() const { return Tcross; }
 // Setters
     void
     setPopulation(vector<Star> pop) { population = pop; }

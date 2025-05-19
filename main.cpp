@@ -100,7 +100,7 @@ void setModelStats(Model& stats, int itr) {
             cout << "Enter newtonian log(ge/a0) at CoM: ";
             cin >> log_ext_rat;
         } else {
-            cout << "Using log(gi/a0) = " << log_ge_a0[itr / log_ge_a0.size()] << endl;
+            cout << "Using log(ge/a0) = " << log_ge_a0[itr / log_ge_a0.size()] << endl;
             log_ext_rat = log_ge_a0[itr / log_ge_a0.size()];
         }
         stats["log_ext_rat"] = log_ext_rat;
@@ -116,7 +116,7 @@ void setModelStats(Model& stats, int itr) {
 }
 
 void
-printInitConds(Model& modelStats) {
+printInitConds(Model& modelStats, double Tmax) {
     cout << "\nRunning with the following initial conditions..." << endl;
     if (!settings::g_ratios) cout << "Model Name: " << settings::modelName << endl;
     else {
@@ -128,7 +128,7 @@ printInitConds(Model& modelStats) {
     cout << "Pop. Size: \t" << settings::N << endl;
     cout << "R_Half: \t" << modelStats["r_half"] << " pc" << endl;
     cout << "Mass % Limit: \t" << settings::massPerc << endl;
-    cout << "Runtime: \t" << (settings::Tmax) / 1000 << " billion years" << endl;
+    cout << "Runtime: \t" << (Tmax) / 1000 << " billion years" << endl;
     cout << "Switches:" << endl;
     cout << "\tPrinting: ";
         settings::pos_out ? cout << "\tpos" : cout << " ";
@@ -165,7 +165,17 @@ printInitConds(Model& modelStats) {
 }
 
 void
-printTides(double time, Galaxy& g, vector<vector<double>>& out) {
+recordCOM(double time, Galaxy& g, vector<vector<double>>& out) {
+    g.calcCOM();
+    PosMat COM = g.getCOM();
+    vector<double> record(7, 0);
+    record[0] = time;
+    for (int i = 1; i < 7; i++) record[i] = COM[i / 3][i % 3];
+    out.push_back(record);
+}
+
+void
+recordTides(double time, Galaxy& g, vector<vector<double>>& out) {
     if (time == 0) out.push_back({ g.getRTidal() });
 
     double r_tidal_exp = 0;
@@ -182,6 +192,7 @@ printTides(double time, Galaxy& g, vector<vector<double>>& out) {
 
 void
 output(Galaxy& g, ofstream& outFile, double time) {
+    // Header of output block, dependent on format setting
     if (settings::format != 1) {
         outFile << time << "\t" << settings::N << "\t" << g.getRHalf();
         if (settings::format == 2) {
@@ -303,7 +314,7 @@ binDispersion(PairList& projection) {
 void
 outputDispProfile(const PairList& profile, int itr) {
     string dispFileName;
-    if (settings::runs != 1) dispFileName = "Run_" + to_string(itr) + settings::dispOutput;
+    if (settings::runs != 1) dispFileName = "Run_" + to_string(itr+1) + settings::dispOutput;
     else dispFileName = settings::skewOutput;
     ofstream out(dispFileName);
     for (int i = 0; i < settings::bins; i++) {
@@ -384,19 +395,19 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 }
 
 void
-dataDump(int itr, Galaxy& dsph, int outputCount, vector<double>& skews, 
-         vector<vector<double>>& tideOutput, vector<vector<double>>& COMrecord) {
+dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews, 
+         PairList& tideOutput, vector<vector<double>>& COMrecord) {
     if (settings::trackSkews) {
         string skewFileName;
-        if (settings::runs != 1) skewFileName = "Run_" + to_string(itr) + settings::skewOutput;
+        if (settings::runs != 1) skewFileName = "Run_" + to_string(itr+1) + settings::skewOutput;
 		else skewFileName = settings::skewOutput;
         ofstream skewFile(skewFileName);
-        for (int i = 0; i < skews.size(); i++) skewFile << i << "\t" << skews[i] << endl;
+        for (int i = 0; i < skews.size(); i++) skewFile << skews[i][0] << "\t" << skews[i][1] << endl;
         skewFile.close();
     }
     if (settings::trackTidalR) {
         string tideFileName;
-        if (settings::runs != 1) tideFileName = "Run_" + to_string(itr) + settings::tidalOutput;
+        if (settings::runs != 1) tideFileName = "Run_" + to_string(itr+1) + settings::tidalOutput;
         else tideFileName = settings::tidalOutput;
         ofstream tidal(tideFileName);
         tidal << tideOutput[0][0] << endl;
@@ -404,7 +415,7 @@ dataDump(int itr, Galaxy& dsph, int outputCount, vector<double>& skews,
     }
     if (settings::CenterOfMass) {
         string COMFileName;
-        if (settings::runs != 1) COMFileName = "Run_" + to_string(itr) + settings::COM_Output;
+        if (settings::runs != 1) COMFileName = "Run_" + to_string(itr+1) + settings::COM_Output;
         else COMFileName = settings::COM_Output;
         ofstream COMout(COMFileName);
         for (int i = 0; i < COMrecord.size(); i++) {
@@ -452,48 +463,54 @@ int main(int argc, char* argv[]) {
         else
             setModelStats(modelStats, itr);
         //cout << "mass: " << modelStats["M_mw"] << " radius: " << modelStats["R_mw"];
-        printInitConds(modelStats);
+        
         Galaxy dsph(modelStats);
-        cout << "\nSuccessfully initialized galaxy\n" << endl;
-        ofstream outFile(settings::simOutput);
-        vector<vector<double>> tideOutput = {};
-        vector<double> skews = {};
-        vector<vector<double>> COMrecord = {};
+        cout << "\nSuccessfully initialized galaxy!\n" << endl;
 
+        // Determine runtime
+        double Tmax;
+        if (settings::constRuntime) Tmax = settings::TmaxConst;
+        else Tmax = settings::crossings * dsph.getTcross();
+        printInitConds(modelStats, Tmax);
+
+        // Set up output file and data storage
+        string outFileName;
+        if (settings::runs != 1) outFileName = "Run_" + to_string(itr + 1) + settings::simOutput;
+        else outFileName = settings::simOutput;
+        ofstream outFile(outFileName);
+        PairList tideOutput = {};
+        PairList skews = {};
+        vector<vector<double>> COMrecord = {};
+        
+        // Realtime timer and simulation time
         Timer timer;
         double time = 0;
         output(dsph, outFile, time);  // Output initial positions
-        if (settings::trackTidalR) printTides(time, dsph, tideOutput);
+        if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
         // cout << "Initial anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
         int outputCount = 1; // tracks outputs for calculating output times
         // Begin integration loop
-        while (time < settings::Tmax) {
+        while (time < Tmax) {
             // Find star with smallest post-timestep time
             Star& minStar = minTimeStar(dsph);
             // Integrate star to next time step, returns time after timestep
             time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass(), dsph.getCOM());
             // Check if output time
             if (time >= outputCount * settings::outputTime) {
-                if (settings::CenterOfMass) {
-                    dsph.calcCOM();
-                    PosMat COM = dsph.getCOM();
-                    vector<double> record(7, 0);
-                    record[0] = outputCount;
-                    for (int i = 1; i < 7; i++) record[i] = COM[i / 3][i % 3];
-                    COMrecord.push_back(record);
-                }
+                if (settings::CenterOfMass) recordCOM(time, dsph, COMrecord);
+                if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
                 output(dsph, outFile, time);
-                if (settings::trackTidalR) printTides(time, dsph, tideOutput);
+                if (settings::trackSkews) {
+                    dsph.calcSkewness();
+                    vector<double> pair = { time, dsph.getSkewness() };
+                    skews.push_back(pair);
+                }                
                 // Check if time to write to console
-                int timePerWrite = settings::Tmax / settings::consoleWrites;
+                int timePerWrite = Tmax / settings::consoleWrites;
                 if (outputCount % timePerWrite == 0) {
                     cout << "Star " << minStar.getID() << " caused output at t = " << time
                         << " My   (" << outputCount / timePerWrite << "/" << settings::consoleWrites << ")"
                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
-                    if (settings::trackSkews) {
-                        dsph.calcSkewness();
-                        skews.push_back(dsph.getSkewness());
-                    }
                     timer.reset();
                 }
                 outputCount++;

@@ -18,20 +18,20 @@ namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
     const int N = 100;                       // Number of bodies in the simulation
-    const double Tmax = 1000;               // Runtime in My
+    const double TmaxConst = 1000;           // Fixed runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
-    const double consoleWrites = floor(sqrt(25+pow(Tmax/10,2)));  // Number of console writes (for efficiency)                  
+    const double consoleWrites = floor(sqrt(25+pow(TmaxConst/10,2)));  // Number of console writes (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
-    const double runs = 16;                  // Number of simulations to run sequentially
+    const double runs = 3;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
 
     /* Switches
             doubles: off = -1
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
-    const bool MOND = false;                 // Modified Newtonian Dymanics switch
+    const bool MOND = true;                 // Modified Newtonian Dymanics switch
     const bool extField = true;              // External Field switch
         const bool diverging = true;         // divergence of ext field
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
@@ -40,19 +40,21 @@ namespace settings {
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
     const bool blackHole = false;            // include central blackhole with mass mBlack
         const double mBlack = 1e6;           // mass of central blackhole
+    const bool constRuntime = false;         // fixed (true) or scale dependent (false) runtime
+        const double crossings = 5;		 // number of crossing times used for scale dependent runtime
     /* Integrated Acceleration:     
     *   0 = gi + ge_star = g_total (orbiting)
     *   1 = g_total - ge_COM       (tidal)
     */ 
     const int integ_acc = 1;
     // Data Tracking
-    const bool CenterOfMass = true;          // tracks center of mass
+    const bool CenterOfMass = false;          // tracks center of mass
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
     const bool trackSkews = true;            // records skew param at every console output
     const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity
         const double freezeR = 5e4;          // Dist from host when stars freeze - 50 kpc
     // Initial Distribution
-    const bool plCir = true;                // planar circular orbits in xy plane (only works for Newtonian)
+    const bool plCir = false;                // planar circular orbits in xy plane (only works for Newtonian)
     const double uniform_r = -1;             // stars initialized with same radius  
     const double uniform_phi = -1;           // stars initialized with same phi, use with plCir
     const double lin_dist_r = -1;            // stars radius dispersed evenly (to given max radius)
@@ -76,7 +78,7 @@ namespace settings {
         *   3 = COM r and v [time x y z vx vy vz / ...]
         *   4 = Animation - COM vel [time N COM_v / ID x y z...]
         */
-    const int format = 4;
+    const int format = 0;
 }   // namespace set
 
 namespace consts {

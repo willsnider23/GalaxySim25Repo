@@ -18,6 +18,13 @@ createPop(double r_half, double baryonCloudMass, double host_R,
     return stars;
 }
 
+double
+calcTcross(double r_half, double baryonCloudMass) {
+    double a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
+    double coefficient = 128 * sqrt(6) / (9 * pow(consts::pi, (1.5)));
+    return coefficient * pow(a_s, 1.5) / sqrt(baryonCloudMass * consts::G);
+}
+
 // Constructor
 Galaxy::Galaxy(Model& model) {
         baryonCloudMass = model["mass"];
@@ -31,6 +38,7 @@ Galaxy::Galaxy(Model& model) {
             host_R = INFINITY;
             host_M = 0;
         }
+        Tcross = calcTcross(r_half, baryonCloudMass);
         COMa_and_adot();
         population = createPop(r_half, baryonCloudMass, host_R, host_M, centerOfMass);
         calcCOM();
