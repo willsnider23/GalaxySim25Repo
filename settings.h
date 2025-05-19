@@ -25,9 +25,10 @@ namespace settings {
     const double consoleWrites = floor(sqrt(25+pow(Tmax/10,2)));  // Number of console writes (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
+    const double runs = 16;                  // Number of simulations to run sequentially
 
     /* Switches
-            dooubles: off = -1
+            doubles: off = -1
             phi: azimuthal angle from +x axis CCW in xy plane 
     */
     const bool MOND = false;                 // Modified Newtonian Dymanics switch

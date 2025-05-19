@@ -75,27 +75,40 @@ getModelStats(Model& stats) {
     stats["r_tidal"] = pow(2.0, 1.0 / 6.0) * stats["R_mw"] * pow(stats["mass"] / stats["M_mw"], 1.0 / 3.0) / 3.0;
 }
 
-void setModelStats(Model& stats) {
+void setModelStats(Model& stats, int itr) {
     double log_int_rat;
+    vector<double> log_gi_a0 = { -2, -1, 0, 1 }; 
+    vector<double> log_ge_a0 = { -2, -1, 0, 1 };
 
-    cout << "Enter newtonian log(gi/a0) at r_half: ";
-    cin >> log_int_rat;
+    if (settings::runs == 1) {
+        cout << "Enter newtonian log(gi/a0) at r_half: ";
+        cin >> log_int_rat;
+    } else {
+        cout << "Using log(gi/a0) = " << log_gi_a0[itr % log_gi_a0.size()] << endl;
+        log_int_rat = log_gi_a0[itr % log_gi_a0.size()];
+    }
     stats["log_int_rat"] = log_int_rat;
+    cout << endl;
 
     stats["mass"] = settings::toy_mass;
     stats["r_half"] = sqrt(consts::G * settings::toy_mass / (2.0 * consts::a_mond * pow(10, log_int_rat)));
 
     if (settings::extField) {
-        double ext_rat;
+        double log_ext_rat;
 
-        cout << "Enter newtonian ge/a0 at CoM: ";
-        cin >> ext_rat;
-        stats["ext_rat"] = ext_rat;
+        if (settings::runs == 1) {
+            cout << "Enter newtonian log(ge/a0) at CoM: ";
+            cin >> log_ext_rat;
+        } else {
+            cout << "Using log(gi/a0) = " << log_ge_a0[itr / log_ge_a0.size()] << endl;
+            log_ext_rat = log_ge_a0[itr / log_ge_a0.size()];
+        }
+        stats["log_ext_rat"] = log_ext_rat;
         cout << endl;
 
         stats["R_mw"] = settings::toy_hostR;
         // double ext_rat_N = pow(ext_rat, 2) / (1 + ext_rat);  -- used if ext_rat is dynamic/MOND ratio
-        stats["M_mw"] = (ext_rat * consts::a_mond) * pow(settings::toy_hostR, 2) / consts::G;
+        stats["M_mw"] = (pow(10, log_ext_rat) * consts::a_mond) * pow(settings::toy_hostR, 2) / consts::G;
 
         // Tidal Radius Eq  (Banik 2022)
         stats["r_tidal"] = pow(2.0, 1.0 / 6.0) * stats["R_mw"] * pow(stats["mass"] / stats["M_mw"], 1.0 / 3.0) / 3.0;
@@ -109,7 +122,7 @@ printInitConds(Model& modelStats) {
     else {
         cout << "Acc Ratios:" << endl;
         cout << "\tgi/a0 = " << pow(10, modelStats["log_int_rat"]) << endl;
-        cout << "\tge/a0 = " << modelStats["ext_rat"] << endl;
+        cout << "\tge/a0 = " << pow(10, modelStats["log_ext_rat"]) << endl;
     }
     cout << "Dsph Mass: \t" << modelStats["mass"] << " solar masses" << endl;
     cout << "Pop. Size: \t" << settings::N << endl;
@@ -288,8 +301,11 @@ binDispersion(PairList& projection) {
 }
 
 void
-outputDispProfile(const PairList& profile) {
-    ofstream out(settings::dispOutput);
+outputDispProfile(const PairList& profile, int itr) {
+    string dispFileName;
+    if (settings::runs != 1) dispFileName = "Run_" + to_string(itr) + settings::dispOutput;
+    else dispFileName = settings::skewOutput;
+    ofstream out(dispFileName);
     for (int i = 0; i < settings::bins; i++) {
         out << profile[i][0] << "\t" << profile[i][1] << endl;
     }
@@ -305,7 +321,7 @@ calcBulkDispersion(PairList& profile) {
 }
 
 double
-dispersion(int outputCount) {
+dispersion(int outputCount, int itr) {
     cout << "Running Dispersion Calculation" << endl;
     cout << "Number of data records = " << outputCount << endl;
 
@@ -337,7 +353,7 @@ dispersion(int outputCount) {
         profile.push_back({ r_avg, sig_avg });
         //dispOut << r_avg << ", " << sig_avg
     }
-    outputDispProfile(profile);
+    outputDispProfile(profile, itr);
     double bulk = calcBulkDispersion(profile);
     return bulk;
 }
@@ -367,6 +383,54 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
     }
 }
 
+void
+dataDump(int itr, Galaxy& dsph, int outputCount, vector<double>& skews, 
+         vector<vector<double>>& tideOutput, vector<vector<double>>& COMrecord) {
+    if (settings::trackSkews) {
+        string skewFileName;
+        if (settings::runs != 1) skewFileName = "Run_" + to_string(itr) + settings::skewOutput;
+		else skewFileName = settings::skewOutput;
+        ofstream skewFile(skewFileName);
+        for (int i = 0; i < skews.size(); i++) skewFile << i << "\t" << skews[i] << endl;
+        skewFile.close();
+    }
+    if (settings::trackTidalR) {
+        string tideFileName;
+        if (settings::runs != 1) tideFileName = "Run_" + to_string(itr) + settings::tidalOutput;
+        else tideFileName = settings::tidalOutput;
+        ofstream tidal(tideFileName);
+        tidal << tideOutput[0][0] << endl;
+        for (int i = 1; i < tideOutput.size(); i++) tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
+    }
+    if (settings::CenterOfMass) {
+        string COMFileName;
+        if (settings::runs != 1) COMFileName = "Run_" + to_string(itr) + settings::COM_Output;
+        else COMFileName = settings::COM_Output;
+        ofstream COMout(COMFileName);
+        for (int i = 0; i < COMrecord.size(); i++) {
+            for (int j = 0; j < 7; j++) COMout << COMrecord[i][j] << "\t";
+            COMout << endl;
+        }
+    }
+
+    if (settings::run_dispersion) {
+        if (settings::pos_out && settings::vel_out) {
+            double bulkDisp = dispersion(outputCount, itr);
+            cout << "Bulk Dispersion: " << bulkDisp << endl;
+            if (settings::MOND) {
+                double HaghiPred = dispPredHaghi(dsph.getMass(), dsph.getRHalf(), dsph.getHostDist(), dsph.getHostMass());
+                cout << "Haghi Disp. Prediction: " << HaghiPred << endl;
+                if (!settings::extField) {
+                    double sigmaIsoM = pow((4 * consts::G * dsph.getMass() * consts::a_mond) / 81, 0.25); // (Milgrom 1994; McGaugh& Milgrom 2013)
+                    cout << "Milgram Isolated MOND disp prediction: " << sigmaIsoM << endl;
+                }
+            }
+        }
+        else
+            cout << "Unable to calculate dispersion profile without recorded positions and velocities" << endl;
+    }
+}
+
 // Reassign population with a controllable states for testing
 /*
     vector<Star> testPop = {};
@@ -380,12 +444,13 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 */
 
 int main(int argc, char* argv[]) {
+    for (int itr = 0; itr < settings::runs; itr++) {
         // Initialize galaxy with given parameters
         Model modelStats;
         if (!settings::g_ratios)
             getModelStats(modelStats);
         else
-            setModelStats(modelStats);
+            setModelStats(modelStats, itr);
         //cout << "mass: " << modelStats["M_mw"] << " radius: " << modelStats["R_mw"];
         printInitConds(modelStats);
         Galaxy dsph(modelStats);
@@ -438,40 +503,9 @@ int main(int argc, char* argv[]) {
         cout << "Complete! :)" << endl;
         outFile.close();
 
-        if (settings::trackSkews) {
-            ofstream skewFile(settings::skewOutput);
-            for (int i = 0; i < skews.size(); i++) skewFile << i << "\t" << skews[i] << endl;
-            skewFile.close();
-        }
-        if (settings::trackTidalR) {
-            ofstream tidal(settings::tidalOutput);
-            tidal << tideOutput[0][0] << endl;
-            for (int i = 1; i < tideOutput.size(); i++) tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
-        }
-        if (settings::CenterOfMass) {
-            ofstream COMout(settings::COM_Output);
-            for (int i = 0; i < COMrecord.size(); i++) {
-                for (int j = 0; j < 7; j++) COMout << COMrecord[i][j] << "\t";
-                COMout << endl;
-            }
-        }
-        
-        if (settings::run_dispersion) {
-            if (settings::pos_out && settings::vel_out) {
-                double bulkDisp = dispersion(outputCount);
-                cout << "Bulk Dispersion: " << bulkDisp << endl;
-                if (settings::MOND) {
-                    double HaghiPred = dispPredHaghi(dsph.getMass(), dsph.getRHalf(), dsph.getHostDist(), dsph.getHostMass());
-                    cout << "Haghi Disp. Prediction: " << HaghiPred << endl;
-                    if (!settings::extField) {
-                        double sigmaIsoM = pow((4 * consts::G * dsph.getMass() * consts::a_mond) / 81, 0.25); // (Milgrom 1994; McGaugh& Milgrom 2013)
-                        cout << "Milgram Isolated MOND disp prediction: " << sigmaIsoM << endl;
-                    }
-                }
-            }
-            else
-                cout << "Unable to calculate dispersion profile without recorded positions and velocities" << endl;
-        }
+        // Output all remaining stored data
+        dataDump(itr, dsph, outputCount, skews, tideOutput, COMrecord);
+    }
 }
 /////////////////////////   End of Real Code    ////////////////////////////////
 /*
