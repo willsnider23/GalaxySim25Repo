@@ -41,13 +41,6 @@ private:
     std::chrono::time_point<clock_> beg_;
 };
 
-double
-vectorMag(vector<double>& vec) {
-    double mag = 0;
-    for (double val : vec) { mag += pow(val, 2); }
-    return sqrt(mag);
-}
-
 void
 getModelStats(Model& stats) {
     ifstream txtFile("modelData.txt");
@@ -82,25 +75,40 @@ getModelStats(Model& stats) {
     stats["r_tidal"] = pow(2.0, 1.0 / 6.0) * stats["R_mw"] * pow(stats["mass"] / stats["M_mw"], 1.0 / 3.0) / 3.0;
 }
 
-void setModelStats(Model& stats) {
+void setModelStats(Model& stats, int itr) {
     double log_int_rat;
+    vector<double> log_gi_a0 = { -2, -1, 0, 1 }; 
+    vector<double> log_ge_a0 = { -2, -1, 0, 1 };
 
-    cout << "Enter newtonian log(gi/a0) at r_half: ";
-    cin >> log_int_rat;
+    if (settings::runs == 1) {
+        cout << "Enter newtonian log(gi/a0) at r_half: ";
+        cin >> log_int_rat;
+    } else {
+        cout << "Using log(gi/a0) = " << log_gi_a0[itr % log_gi_a0.size()] << endl;
+        log_int_rat = log_gi_a0[itr % log_gi_a0.size()];
+    }
+    stats["log_int_rat"] = log_int_rat;
+    cout << endl;
 
     stats["mass"] = settings::toy_mass;
     stats["r_half"] = sqrt(consts::G * settings::toy_mass / (2.0 * consts::a_mond * pow(10, log_int_rat)));
 
-    if (settings::EFE) {
-        double ext_rat;
+    if (settings::extField) {
+        double log_ext_rat;
 
-        cout << "Enter dynamic ge/a0 at CoM: ";
-        cin >> ext_rat;
+        if (settings::runs == 1) {
+            cout << "Enter newtonian log(ge/a0) at CoM: ";
+            cin >> log_ext_rat;
+        } else {
+            cout << "Using log(ge/a0) = " << log_ge_a0[itr / log_ge_a0.size()] << endl;
+            log_ext_rat = log_ge_a0[itr / log_ge_a0.size()];
+        }
+        stats["log_ext_rat"] = log_ext_rat;
         cout << endl;
 
         stats["R_mw"] = settings::toy_hostR;
-        double ext_rat_N = pow(ext_rat, 2) / (1 + ext_rat);
-        stats["M_mw"] = (ext_rat_N * consts::a_mond) * pow(settings::toy_hostR, 2) / consts::G;
+        // double ext_rat_N = pow(ext_rat, 2) / (1 + ext_rat);  -- used if ext_rat is dynamic/MOND ratio
+        stats["M_mw"] = (pow(10, log_ext_rat) * consts::a_mond) * pow(settings::toy_hostR, 2) / consts::G;
 
         // Tidal Radius Eq  (Banik 2022)
         stats["r_tidal"] = pow(2.0, 1.0 / 6.0) * stats["R_mw"] * pow(stats["mass"] / stats["M_mw"], 1.0 / 3.0) / 3.0;
@@ -108,14 +116,19 @@ void setModelStats(Model& stats) {
 }
 
 void
-printInitConds(Model& modelStats) {
-    cout << "Running with the following initial conditions..." << endl;
-    cout << "Model Name: " << settings::modelName << endl;
+printInitConds(Model& modelStats, double Tmax) {
+    cout << "\nRunning with the following initial conditions..." << endl;
+    if (!settings::g_ratios) cout << "Model Name: " << settings::modelName << endl;
+    else {
+        cout << "Acc Ratios:" << endl;
+        cout << "\tgi/a0 = " << pow(10, modelStats["log_int_rat"]) << endl;
+        cout << "\tge/a0 = " << pow(10, modelStats["log_ext_rat"]) << endl;
+    }
     cout << "Dsph Mass: \t" << modelStats["mass"] << " solar masses" << endl;
     cout << "Pop. Size: \t" << settings::N << endl;
     cout << "R_Half: \t" << modelStats["r_half"] << " pc" << endl;
     cout << "Mass % Limit: \t" << settings::massPerc << endl;
-    cout << "Runtime: \t" << (settings::Tmax) / 1000 << " billion years" << endl;
+    cout << "Runtime: \t" << (Tmax) / 1000 << " billion years" << endl;
     cout << "Switches:" << endl;
     cout << "\tPrinting: ";
         settings::pos_out ? cout << "\tpos" : cout << " ";
@@ -127,11 +140,13 @@ printInitConds(Model& modelStats) {
     if (settings::lin_dist_r != -1) cout << "\tLinearly Distributed R: \t" << settings::lin_dist_r << " pc (max r)" << endl;
     if (settings::lin_dist_phi != -1) cout << "\tLinearly Distributed Phi: \t" << settings::lin_dist_phi << " groups" << endl;
     if (settings::CenterOfMass) cout << "\tCoM Tracking: \tON" << endl;
+    if (settings::trackTidalR) cout << "\tTidal R Tracking: \tON" << endl;
+    if (settings::trackSkews) cout << "\tSkew Tracking: \tON" << endl;
     if (settings::blackHole) cout << "\tBlackhole: \tON" << endl;
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
-    if (settings::EFE) {
-        cout << "\tEFE: \tON" << endl;
+    if (settings::extField) {
+        cout << "\tExt Field: \t\tON" << endl;
         cout << "\t\tHost Mass: \t" << modelStats["M_mw"] << " solar masses" << endl;
         cout << "\t\tTidal Radius: \t" << modelStats["r_tidal"] << " pc" << endl;
     }
@@ -150,7 +165,17 @@ printInitConds(Model& modelStats) {
 }
 
 void
-printTides(double time, Galaxy& g, vector<vector<double>>& out) {
+recordCOM(double time, Galaxy& g, vector<vector<double>>& out) {
+    g.calcCOM();
+    PosMat COM = g.getCOM();
+    vector<double> record(7, 0);
+    record[0] = time;
+    for (int i = 1; i < 7; i++) record[i] = COM[i / 3][i % 3];
+    out.push_back(record);
+}
+
+void
+recordTides(double time, Galaxy& g, vector<vector<double>>& out) {
     if (time == 0) out.push_back({ g.getRTidal() });
 
     double r_tidal_exp = 0;
@@ -158,7 +183,7 @@ printTides(double time, Galaxy& g, vector<vector<double>>& out) {
     for (int i = 0; i < settings::N; i++) {
         if (pop[i].isBound(g.getGeff(), g.getHostMass(), g.getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0))) {
             vector<double> pos = pop[i].getPos();
-            double r = vectorMag(pos);
+            double r = calcMag(pos);
             if (r > r_tidal_exp) r_tidal_exp = r;
         }
     }
@@ -167,11 +192,15 @@ printTides(double time, Galaxy& g, vector<vector<double>>& out) {
 
 void
 output(Galaxy& g, ofstream& outFile, double time) {
-   if (settings::format != 1) {
+    // Header of output block, dependent on format setting
+    if (settings::format != 1) {
         outFile << time << "\t" << settings::N << "\t" << g.getRHalf();
         if (settings::format == 2) {
             PosMat COM = g.getCOM();
             outFile << "\t" << COM[0][0] << " " << COM[0][1] << " " << COM[0][2];
+        } else if (settings::format == 4) {
+            PosMat COM = g.getCOM();
+            outFile << "\t" << COM[1][0] << " " << COM[1][1] << " " << COM[1][2];
         }
         outFile << endl;
     }
@@ -243,7 +272,7 @@ makeProjection(ifstream& read) {
             x = stod(X); y = stod(Y); z = stod(Z);
             vx = stod(VX); vy = stod(VY); vz = stod(VZ);
             r = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-            if (r <= settings::trunc_dist) {
+            if (settings::trunc_dist == -1 || r <= settings::trunc_dist) {
                 if (settings::axis == 1) {
                     perp_r = sqrt(pow(y, 2) + pow(z, 2));
                     v_rad = vx;
@@ -283,8 +312,11 @@ binDispersion(PairList& projection) {
 }
 
 void
-outputDispProfile(const PairList& profile) {
-    ofstream out(settings::dispOutput);
+outputDispProfile(const PairList& profile, int itr) {
+    string dispFileName;
+    if (settings::runs != 1) dispFileName = "Run_" + to_string(itr+1) + settings::dispOutput;
+    else dispFileName = settings::skewOutput;
+    ofstream out(dispFileName);
     for (int i = 0; i < settings::bins; i++) {
         out << profile[i][0] << "\t" << profile[i][1] << endl;
     }
@@ -300,7 +332,7 @@ calcBulkDispersion(PairList& profile) {
 }
 
 double
-dispersion(int outputCount) {
+dispersion(int outputCount, int itr) {
     cout << "Running Dispersion Calculation" << endl;
     cout << "Number of data records = " << outputCount << endl;
 
@@ -332,7 +364,7 @@ dispersion(int outputCount) {
         profile.push_back({ r_avg, sig_avg });
         //dispOut << r_avg << ", " << sig_avg
     }
-    outputDispProfile(profile);
+    outputDispProfile(profile, itr);
     double bulk = calcBulkDispersion(profile);
     return bulk;
 }
@@ -353,12 +385,60 @@ double
 dispPredHaghi(double M, double r_half, double hostR, double hostM) {
     double x = log10((consts::G * M / (2 * pow(r_half, 2))) / consts::a_mond);
     double sigmaM = pow((4.0 / 81.0) * consts::G * M * consts::a_mond, 0.25) * pow(1 + 0.56 * exp(3.02*x),0.184);
-    if (!settings::EFE) {
+    if (!settings::extField) {
         return sigmaM;
     }  else {
         double a_e = (consts::G * hostM) / pow(hostR, 2);
         double sigmaEF = sqrt((consts::G * M * consts::a_mond) / (4 * hostR * a_e)); // pow(10, (log10(sigmaM) + F(a_e, x)));
         return sigmaEF;
+    }
+}
+
+void
+dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews, 
+         PairList& tideOutput, vector<vector<double>>& COMrecord) {
+    if (settings::trackSkews) {
+        string skewFileName;
+        if (settings::runs != 1) skewFileName = "Run_" + to_string(itr+1) + settings::skewOutput;
+		else skewFileName = settings::skewOutput;
+        ofstream skewFile(skewFileName);
+        for (int i = 0; i < skews.size(); i++) skewFile << skews[i][0] << "\t" << skews[i][1] << endl;
+        skewFile.close();
+    }
+    if (settings::trackTidalR) {
+        string tideFileName;
+        if (settings::runs != 1) tideFileName = "Run_" + to_string(itr+1) + settings::tidalOutput;
+        else tideFileName = settings::tidalOutput;
+        ofstream tidal(tideFileName);
+        tidal << tideOutput[0][0] << endl;
+        for (int i = 1; i < tideOutput.size(); i++) tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
+    }
+    if (settings::CenterOfMass) {
+        string COMFileName;
+        if (settings::runs != 1) COMFileName = "Run_" + to_string(itr+1) + settings::COM_Output;
+        else COMFileName = settings::COM_Output;
+        ofstream COMout(COMFileName);
+        for (int i = 0; i < COMrecord.size(); i++) {
+            for (int j = 0; j < 7; j++) COMout << COMrecord[i][j] << "\t";
+            COMout << endl;
+        }
+    }
+
+    if (settings::run_dispersion) {
+        if (settings::pos_out && settings::vel_out) {
+            double bulkDisp = dispersion(outputCount, itr);
+            cout << "Bulk Dispersion: " << bulkDisp << endl;
+            if (settings::MOND) {
+                double HaghiPred = dispPredHaghi(dsph.getMass(), dsph.getRHalf(), dsph.getHostDist(), dsph.getHostMass());
+                cout << "Haghi Disp. Prediction: " << HaghiPred << endl;
+                if (!settings::extField) {
+                    double sigmaIsoM = pow((4 * consts::G * dsph.getMass() * consts::a_mond) / 81, 0.25); // (Milgrom 1994; McGaugh& Milgrom 2013)
+                    cout << "Milgram Isolated MOND disp prediction: " << sigmaIsoM << endl;
+                }
+            }
+        }
+        else
+            cout << "Unable to calculate dispersion profile without recorded positions and velocities" << endl;
     }
 }
 
@@ -375,43 +455,65 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 */
 
 int main(int argc, char* argv[]) {
+    for (int itr = 0; itr < settings::runs; itr++) {
         // Initialize galaxy with given parameters
         Model modelStats;
         if (!settings::g_ratios)
             getModelStats(modelStats);
         else
-            setModelStats(modelStats);
+            setModelStats(modelStats, itr);
         //cout << "mass: " << modelStats["M_mw"] << " radius: " << modelStats["R_mw"];
-        printInitConds(modelStats);
+        
         Galaxy dsph(modelStats);
-        cout << "\nSuccessfully initialized galaxy\n" << endl;
-        ofstream outFile(settings::simOutput);
-        vector<vector<double>> tideOutput = {};
+        cout << "\nSuccessfully initialized galaxy!\n" << endl;
 
+        // Determine runtime
+        double Tmax;
+        if (settings::constRuntime) Tmax = settings::TmaxConst;
+        else Tmax = floor(settings::crossings * dsph.getTcross());
+        printInitConds(modelStats, Tmax);
+
+        // Set up output file and data storage
+        string outFileName;
+        if (settings::runs != 1) outFileName = "Run_" + to_string(itr + 1) + settings::simOutput;
+        else outFileName = settings::simOutput;
+        ofstream outFile(outFileName);
+        PairList tideOutput = {};
+        PairList skews = {};
+        vector<vector<double>> COMrecord = {};
+        
+        // Realtime timer and simulation time
         Timer timer;
-        double time = 0;
+        double time = 0, prevTime = 0;
         output(dsph, outFile, time);  // Output initial positions
-        if (settings::trackTidalR) printTides(time, dsph, tideOutput);
+        if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
         // cout << "Initial anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
-        int outputCount = 1; // tracks outputs for calculating output times
+        int outputCount = 1; // tracks outputs for calculating dispersion
+        int consoleWrites = 0;
         // Begin integration loop
-        while (time < settings::Tmax) {
+        while (time < Tmax) {
             // Find star with smallest post-timestep time
             Star& minStar = minTimeStar(dsph);
             // Integrate star to next time step, returns time after timestep
-            time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass());
+            time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass(), dsph.getCOM());
             // Check if output time
             if (time >= outputCount * settings::outputTime) {
-                if (settings::CenterOfMass) dsph.calcCOM();
+                if (settings::CenterOfMass) recordCOM(time, dsph, COMrecord);
+                if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
                 output(dsph, outFile, time);
-                if (settings::trackTidalR) printTides(time, dsph, tideOutput);
+                if (settings::trackSkews) {
+                    dsph.calcSkewness();
+                    vector<double> pair = { time, dsph.getSkewness() };
+                    skews.push_back(pair);
+                }                
                 // Check if time to write to console
-                int timePerWrite = settings::Tmax / settings::consoleWrites;
-                if (outputCount % timePerWrite == 0) {
+                if (timer.elapsed() >= settings::consolePeriod) {
+                    consoleWrites++;
                     cout << "Star " << minStar.getID() << " caused output at t = " << time
-                        << " My   (" << outputCount / timePerWrite << "/" << settings::consoleWrites << ")"
+                        << " My   (" << consoleWrites << "/" << (int)(Tmax / (time - prevTime)) << ")"
                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
                     timer.reset();
+                    prevTime = time;
                 }
                 outputCount++;
                 // if (outputCount % 50 == 0) cout << "Anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
@@ -420,28 +522,9 @@ int main(int argc, char* argv[]) {
         cout << "Complete! :)" << endl;
         outFile.close();
 
-        if (settings::run_dispersion) {
-            if (settings::pos_out && settings::vel_out) {
-                double bulkDisp = dispersion(outputCount);
-                cout << "Bulk Dispersion: " << bulkDisp << endl;
-                if (settings::MOND) {
-                    double HaghiPred = dispPredHaghi(dsph.getMass(), dsph.getRHalf(), dsph.getHostDist(), dsph.getHostMass());
-                    cout << "Haghi Disp. Prediction: " << HaghiPred << endl;
-                    if (!settings::EFE) {
-                        double sigmaIsoM = pow((4 * consts::G * dsph.getMass() * consts::a_mond) / 81, 0.25); // (Milgrom 1994; McGaugh& Milgrom 2013)
-                        cout << "Milgram Isolated MOND disp prediction: " << sigmaIsoM << endl;
-                    }
-                }
-            }
-            else
-                cout << "Unable to calculate dispersion profile without recorded positions and velocities" << endl;
-        }
-        if (settings::trackTidalR) {
-            ofstream tidal("tidalR.txt");
-            tidal << tideOutput[0][0] << endl;
-            for (int i = 1; i < tideOutput.size(); i++) 
-                tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
-        }
+        // Output all remaining stored data
+        dataDump(itr, dsph, outputCount, skews, tideOutput, COMrecord);
+    }
 }
 /////////////////////////   End of Real Code    ////////////////////////////////
 /*

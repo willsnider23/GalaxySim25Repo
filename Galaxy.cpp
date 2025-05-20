@@ -3,16 +3,26 @@
 #include "Galaxy.h"
 #include "settings.h"
 
+using PosMat = vector<vector<double>>;
+
 vector<Star>
-initialConditions(double r_half, double cloudMass, double hostR, double hostM) {
+createPop(double r_half, double baryonCloudMass, double host_R, 
+          double host_M, PosMat& centerOfMass) {
     vector<Star> stars;
 
     // Initialize N bodies, push into pop
     for (int idx = 0; idx < settings::N; idx++) {
-        Star star(idx, r_half, cloudMass, hostR, hostM);
+        Star star(idx, r_half, baryonCloudMass, host_R, host_M, centerOfMass);
         stars.push_back(star);
     }        
     return stars;
+}
+
+double
+calcTcross(double r_half, double baryonCloudMass) {
+    double a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
+    double coefficient = 128 * sqrt(6) / (9 * pow(consts::pi, (1.5)));
+    return coefficient * pow(a_s, 1.5) / sqrt(baryonCloudMass * consts::G);
 }
 
 // Constructor
@@ -21,14 +31,16 @@ Galaxy::Galaxy(Model& model) {
         r_half = model["r_half"];
         a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
         r_tidal = model["r_tidal"];
-        if (settings::EFE) { 
+        if (settings::extField) { 
             host_R = model["R_mw"]; 
             host_M = model["M_mw"];
         } else {
             host_R = INFINITY;
             host_M = 0;
         }
-        population = initialConditions(r_half, baryonCloudMass, host_R, host_M);
+        Tcross = calcTcross(r_half, baryonCloudMass);
+        COMa_and_adot();
+        population = createPop(r_half, baryonCloudMass, host_R, host_M, centerOfMass);
         calcCOM();
 }
 
@@ -50,13 +62,6 @@ Galaxy::isUniformTime() const {
             return false;
     }
     return true;
-}
-
-double
-calcMag(vector<double> vec) {
-    double mag = 0;
-    for (double val : vec) { mag += pow(val, 2); }
-    return sqrt(mag);
 }
 
 double
@@ -96,10 +101,10 @@ Galaxy::calcCOM() {
     vector<double> sumR = { 0, 0, 0 }, sumV = { 0, 0, 0 };
     for (Star& s : population)
     {
+        vector<double> pos = s.getPos();
+        vector<double> vel = s.getVel();
         for (int i = 0; i < 3; i++) {
-            vector<double> pos = s.getPos();
-            vector<double> vel = s.getVel();
-            if (calcMag(pos) < settings::trunc_dist) {
+            if (settings::trunc_dist == -1 || calcMag(pos) < settings::trunc_dist) {
                 sumR[i] += s.getPos()[i];
                 sumV[i] += s.getVel()[i];
             }
@@ -109,12 +114,37 @@ Galaxy::calcCOM() {
     centerOfMass[1] = { sumV[0] / settings::N, sumV[1] / settings::N, sumV[2] / settings::N };
 }
 
+// Newtonian acceleration and jerk of the center of mass
+// copied from Star external field submethod
+void
+Galaxy::COMa_and_adot() {
+    centerOfMass[2] = { 0,0,0 };
+    centerOfMass[3] = { 0,0,0 };
+    // currently fixed at origin & static (have it follow calculated COM later?)
+    vector<double> pos_e = { -host_R, 0, 0 };
+    vector<double> vel(3, 0);
+    double r_e = calcMag(pos_e);
+    double r_e2 = pow(r_e, 2);
+    double r_e3 = pow(r_e, 3);
+    double factor1 = consts::G * host_M / r_e3;
+    double re_dot_v = dotProduct(pos_e, vel);
+    double factor2 = factor1 * 3.0 * re_dot_v / r_e2;
+
+    /* note here we can use velocity of star, vel, since the host is not moving.
+       If the host moves, this will have to be the relative velocity. */
+    for (int i = 0; i < 3; i++) {
+        centerOfMass[2][i] = -pos_e[i] * factor1;
+        centerOfMass[3][i] = (-vel[i] * factor1) + (pos_e[i] * factor2);
+    }
+}
+
 void 
 Galaxy::calcSkewness() {
     // get list of all x-positions in population
     vector<double> posList;
     for (Star& s : population) {
-        posList.push_back(s.getPos()[0]);
+        if (s.isBound(getGeff(), getMass(), getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0)))
+            posList.push_back(s.getPos()[0]);
     }
     sort(posList.begin(), posList.end());
 
@@ -124,7 +154,7 @@ Galaxy::calcSkewness() {
     double P_ninety = posList[floor(posList.size() * 0.9)];
 
     // Kelly's Coefficient of Skewness
-    double SK = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
+    skewness = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
 }
 
 void
@@ -136,10 +166,10 @@ Galaxy::wrangleStars(double time) {
 }
 
 void
-Galaxy::HITS(Star& s, double time) const {
+Galaxy::HITS(Star& s, double time) {
     if (s.getAfterTimestep() > time) {
         s.predict(time - s.getTime());
-        s.a_and_adot(r_half, baryonCloudMass, host_R, host_M, true);
+        s.a_and_adot(r_half, baryonCloudMass, host_R, host_M, true, centerOfMass);
         s.correct(time - s.getTime());
     }
 }

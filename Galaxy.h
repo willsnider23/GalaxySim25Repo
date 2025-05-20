@@ -25,7 +25,9 @@ class Galaxy {
     double baryonCloudMass;
     double r_half, a_s, r_tidal;
     double host_R, host_M;
-    PosMat centerOfMass = { {}, {} };
+    double Tcross;
+    // centerOfMass pos, vel, acc, and jerk
+    PosMat centerOfMass = { {}, {}, {}, {} };
     double skewness;
 
 public:
@@ -51,12 +53,16 @@ public:
     getSize() const { return (int)population.size(); }
     PosMat&
     getCOM() { return centerOfMass; }
+    double
+    getSkewness() { return skewness; }
     bool
     isUniformTime() const;
     double
     calcAnisotropyFactor();
     double
     getGeff() const;
+    double 
+    getTcross() const { return Tcross; }
 // Setters
     void
     setPopulation(vector<Star> pop) { population = pop; }
@@ -64,11 +70,13 @@ public:
     void
     calcCOM();
     void
+    COMa_and_adot();
+    void
     calcSkewness();
     void
     wrangleStars(double time);
     void
-    HITS(Star& s,double time) const;
+    HITS(Star& s,double time);
 };
  
 #endif
