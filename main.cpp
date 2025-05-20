@@ -471,7 +471,8 @@ int main(int argc, char* argv[]) {
         double Tmax;
         if (settings::constRuntime) Tmax = settings::TmaxConst;
         else {
-            double crossings = (settings::minCrossings - 1) * exp(-dsph.getTcross() / 200) + 1;
+            double t_cr = dsph.getTcross();
+            double crossings = floor(pow(10, -log10(t_cr) + 4) + 2);
             Tmax = floor(crossings * dsph.getTcross());
         }
         printInitConds(modelStats, Tmax);
