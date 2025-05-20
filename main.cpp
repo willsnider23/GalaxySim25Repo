@@ -470,7 +470,10 @@ int main(int argc, char* argv[]) {
         // Determine runtime
         double Tmax;
         if (settings::constRuntime) Tmax = settings::TmaxConst;
-        else Tmax = floor(settings::crossings * dsph.getTcross());
+        else {
+            double crossings = (settings::minCrossings - 1) * exp(-dsph.getTcross() / 200) + 1;
+            Tmax = floor(crossings * dsph.getTcross());
+        }
         printInitConds(modelStats, Tmax);
 
         // Set up output file and data storage
