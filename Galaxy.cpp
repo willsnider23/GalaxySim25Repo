@@ -143,7 +143,8 @@ Galaxy::calcSkewness() {
     // get list of all x-positions in population
     vector<double> posList;
     for (Star& s : population) {
-        posList.push_back(s.getPos()[0]);
+        if (s.isBound(getGeff(), getMass(), getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0)))
+            posList.push_back(s.getPos()[0]);
     }
     sort(posList.begin(), posList.end());
 
