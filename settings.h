@@ -22,10 +22,10 @@ namespace settings {
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
-    const double consoleWrites = floor(sqrt(25+pow(TmaxConst/10,2)));  // Number of console writes (for efficiency)                  
+    const double consolePeriod = 2.5;          // Seconds of execution time per write (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
-    const double runs = 3;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+    const double runs = 1;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
 
     /* Switches
             doubles: off = -1
@@ -44,8 +44,7 @@ namespace settings {
         const double crossings = 5;		 // number of crossing times used for scale dependent runtime
     /* Integrated Acceleration:     
     *   0 = gi + ge_star = g_total (orbiting)
-    *   1 = g_total - ge_COM       (tidal)
-    */ 
+    *   1 = g_total - ge_COM       (tidal)    */ 
     const int integ_acc = 1;
     // Data Tracking
     const bool CenterOfMass = false;          // tracks center of mass

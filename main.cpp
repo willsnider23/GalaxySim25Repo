@@ -470,7 +470,7 @@ int main(int argc, char* argv[]) {
         // Determine runtime
         double Tmax;
         if (settings::constRuntime) Tmax = settings::TmaxConst;
-        else Tmax = settings::crossings * dsph.getTcross();
+        else Tmax = floor(settings::crossings * dsph.getTcross());
         printInitConds(modelStats, Tmax);
 
         // Set up output file and data storage
@@ -484,11 +484,12 @@ int main(int argc, char* argv[]) {
         
         // Realtime timer and simulation time
         Timer timer;
-        double time = 0;
+        double time = 0, prevTime = 0;
         output(dsph, outFile, time);  // Output initial positions
         if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
         // cout << "Initial anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
-        int outputCount = 1; // tracks outputs for calculating output times
+        int outputCount = 1; // tracks outputs for calculating dispersion
+        int consoleWrites = 0;
         // Begin integration loop
         while (time < Tmax) {
             // Find star with smallest post-timestep time
@@ -506,12 +507,13 @@ int main(int argc, char* argv[]) {
                     skews.push_back(pair);
                 }                
                 // Check if time to write to console
-                int timePerWrite = Tmax / settings::consoleWrites;
-                if (outputCount % timePerWrite == 0) {
+                if (timer.elapsed() >= settings::consolePeriod) {
+                    consoleWrites++;
                     cout << "Star " << minStar.getID() << " caused output at t = " << time
-                        << " My   (" << outputCount / timePerWrite << "/" << settings::consoleWrites << ")"
+                        << " My   (" << consoleWrites << "/" << (int)(Tmax / (time - prevTime)) << ")"
                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
                     timer.reset();
+                    prevTime = time;
                 }
                 outputCount++;
                 // if (outputCount % 50 == 0) cout << "Anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
