@@ -23,7 +23,7 @@ using namespace std;
 using namespace std::string_literals;
 using PosMat = vector<vector<double>>;
 using Model = unordered_map<string, double>;
-using PairList = vector<vector<double>>;
+using DataPoints = vector<vector<double>>;
 
 class Timer
 {
@@ -77,8 +77,8 @@ getModelStats(Model& stats) {
 
 void setModelStats(Model& stats, int itr) {
     double log_int_rat;
-    vector<double> log_gi_a0 = { -2, -1, 0, 1 }; 
-    vector<double> log_ge_a0 = { -2, -1, 0, 1 };
+    vector<double> log_gi_a0 = { -1, 0, 1 }; 
+    vector<double> log_ge_a0 = { 0, 1 };
 
     if (settings::runs == 1) {
         cout << "Enter newtonian log(gi/a0) at r_half: ";
@@ -116,7 +116,7 @@ void setModelStats(Model& stats, int itr) {
 }
 
 void
-printInitConds(Model& modelStats, double Tmax) {
+printInitConds(Model& modelStats, double Tmax, double t_cr) {
     cout << "\nRunning with the following initial conditions..." << endl;
     if (!settings::g_ratios) cout << "Model Name: " << settings::modelName << endl;
     else {
@@ -128,6 +128,7 @@ printInitConds(Model& modelStats, double Tmax) {
     cout << "Pop. Size: \t" << settings::N << endl;
     cout << "R_Half: \t" << modelStats["r_half"] << " pc" << endl;
     cout << "Mass % Limit: \t" << settings::massPerc << endl;
+    cout << "Crossing Time: \t" << t_cr / 1000 << " billion years" << endl;
     cout << "Runtime: \t" << (Tmax) / 1000 << " billion years" << endl;
     cout << "Switches:" << endl;
     cout << "\tPrinting: ";
@@ -251,7 +252,7 @@ minTimeStar(Galaxy& g) {
     return g.getStar(minIdx);
 }
 
-PairList
+DataPoints
 makeProjection(ifstream& read) {
     
     string line, Time, skip, ID;
@@ -259,7 +260,7 @@ makeProjection(ifstream& read) {
     double x, y, z, vx, vy, vz;
     double r, perp_r, v_rad;
 
-    PairList projection = {};
+    DataPoints projection = {};
     getline(read, line);
     istringstream head(line);
     head >> Time >> skip;
@@ -291,9 +292,9 @@ makeProjection(ifstream& read) {
     return projection;
 }
 
-PairList
-binDispersion(PairList& projection) {
-    PairList profile = {};
+DataPoints
+binDispersion(DataPoints& projection) {
+    DataPoints profile = {};
     for (double i = 0; i < settings::bins; i++) {
         double r_sum = 0, v_sum = 0, v2_sum = 0;
         for (double star = 0; star < settings::bins; star++) {
@@ -312,7 +313,7 @@ binDispersion(PairList& projection) {
 }
 
 void
-outputDispProfile(const PairList& profile, int itr) {
+outputDispProfile(const DataPoints& profile, int itr) {
     string dispFileName;
     if (settings::runs != 1) dispFileName = "Run_" + to_string(itr+1) + settings::dispOutput;
     else dispFileName = settings::skewOutput;
@@ -323,7 +324,7 @@ outputDispProfile(const PairList& profile, int itr) {
 }
 
 double
-calcBulkDispersion(PairList& profile) {
+calcBulkDispersion(DataPoints& profile) {
     double bulk = 0;
     for (int b = 0; b < settings::bins; b++) {
         bulk += profile[b][1];
@@ -337,8 +338,8 @@ dispersion(int outputCount, int itr) {
     cout << "Number of data records = " << outputCount << endl;
 
     ifstream read(settings::simOutput);
-    PairList projection, snapDisp;
-    vector<PairList> dispTimeline = {};
+    DataPoints projection, snapDisp;
+    vector<DataPoints> dispTimeline = {};
     for (int i = 0; i < outputCount; i++) {
         projection = makeProjection(read);
         sort(projection.begin(), projection.end(),
@@ -351,7 +352,7 @@ dispersion(int outputCount, int itr) {
     read.close();
     cout << "Dispersion timeline created" << endl;
 
-    PairList profile = {};
+    DataPoints profile = {};
     for (int b = 0; b < settings::bins; b++) {
         double r_sum = 0, sig_sum = 0;
         for (int t = 0; t < outputCount; t++) {
@@ -395,14 +396,13 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 }
 
 void
-dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews, 
-         PairList& tideOutput, vector<vector<double>>& COMrecord) {
+dataDump(int itr, Galaxy& dsph, int outputCount, DataPoints& skews, DataPoints& tideOutput, DataPoints& COMrecord) {
     if (settings::trackSkews) {
         string skewFileName;
         if (settings::runs != 1) skewFileName = "Run_" + to_string(itr+1) + settings::skewOutput;
 		else skewFileName = settings::skewOutput;
         ofstream skewFile(skewFileName);
-        for (int i = 0; i < skews.size(); i++) skewFile << skews[i][0] << "\t" << skews[i][1] << endl;
+        for (int i = 0; i < skews.size(); i++) skewFile << skews[i][0] << "\t" << skews[i][1] << "\t" << skews[i][2] << endl;
         skewFile.close();
     }
     if (settings::trackTidalR) {
@@ -412,6 +412,7 @@ dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews,
         ofstream tidal(tideFileName);
         tidal << tideOutput[0][0] << endl;
         for (int i = 1; i < tideOutput.size(); i++) tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
+        tidal.close();
     }
     if (settings::CenterOfMass) {
         string COMFileName;
@@ -422,6 +423,7 @@ dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews,
             for (int j = 0; j < 7; j++) COMout << COMrecord[i][j] << "\t";
             COMout << endl;
         }
+        COMout.close();
     }
 
     if (settings::run_dispersion) {
@@ -472,23 +474,23 @@ int main(int argc, char* argv[]) {
         if (settings::constRuntime) Tmax = settings::TmaxConst;
         else {
             double t_cr = dsph.getTcross();
-            double crossings = floor(pow(10, -log10(t_cr) + 4) + 2);
+            double crossings = 100 * pow(10, -1.5*(log10(t_cr) - 2)) + 2;
             Tmax = floor(crossings * dsph.getTcross());
         }
-        printInitConds(modelStats, Tmax);
+        printInitConds(modelStats, Tmax, dsph.getTcross());
 
         // Set up output file and data storage
         string outFileName;
         if (settings::runs != 1) outFileName = "Run_" + to_string(itr + 1) + settings::simOutput;
         else outFileName = settings::simOutput;
         ofstream outFile(outFileName);
-        PairList tideOutput = {};
-        PairList skews = {};
-        vector<vector<double>> COMrecord = {};
+        DataPoints tideOutput = {};
+        DataPoints skews = {};
+        DataPoints COMrecord = {};
         
         // Realtime timer and simulation time
         Timer timer;
-        double time = 0, prevTime = 0;
+        double time = 0;
         output(dsph, outFile, time);  // Output initial positions
         if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
         // cout << "Initial anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
@@ -502,22 +504,18 @@ int main(int argc, char* argv[]) {
             time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass(), dsph.getCOM());
             // Check if output time
             if (time >= outputCount * settings::outputTime) {
+                // Record specified data points
                 if (settings::CenterOfMass) recordCOM(time, dsph, COMrecord);
                 if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
+                if (settings::trackSkews) skews.push_back({ time, dsph.calcSkewness(true), dsph.calcSkewness(false) }); 
                 output(dsph, outFile, time);
-                if (settings::trackSkews) {
-                    dsph.calcSkewness();
-                    vector<double> pair = { time, dsph.getSkewness() };
-                    skews.push_back(pair);
-                }                
+                             
                 // Check if time to write to console
                 if (timer.elapsed() >= settings::consolePeriod) {
                     consoleWrites++;
-                    cout << "Star " << minStar.getID() << " caused output at t = " << time
-                        << " My   (" << consoleWrites << "/" << (int)(Tmax / (time - prevTime)) << ")"
-                        << "\tElasped Time : " << timer.elapsed() << " s" << endl;
+                    cout << "t = " << time << " My   (" << consoleWrites << "/" << (int)(Tmax / (time / consoleWrites)) << ")"
+                         << "\tElasped Time : " << timer.elapsed() << " s" << endl;
                     timer.reset();
-                    prevTime = time;
                 }
                 outputCount++;
                 // if (outputCount % 50 == 0) cout << "Anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
