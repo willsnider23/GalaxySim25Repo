@@ -28,7 +28,6 @@ class Galaxy {
     double Tcross;
     // centerOfMass pos, vel, acc, and jerk
     PosMat centerOfMass = { {}, {}, {}, {} };
-    double skewness;
 
 public:
     Galaxy(Model& model);
@@ -53,12 +52,12 @@ public:
     getSize() const { return (int)population.size(); }
     PosMat&
     getCOM() { return centerOfMass; }
-    double
-    getSkewness() { return skewness; }
     bool
     isUniformTime() const;
     double
     calcAnisotropyFactor();
+    double
+    calcSkewness( bool boundPop );
     double
     getGeff() const;
     double 
@@ -71,8 +70,6 @@ public:
     calcCOM();
     void
     COMa_and_adot();
-    void
-    calcSkewness();
     void
     wrangleStars(double time);
     void

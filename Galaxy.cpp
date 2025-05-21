@@ -138,23 +138,27 @@ Galaxy::COMa_and_adot() {
     }
 }
 
-void 
-Galaxy::calcSkewness() {
-    // get list of all x-positions in population
+double 
+Galaxy::calcSkewness( bool boundPop ) {
+    // get list of all x-positions in specified population
     vector<double> posList;
     for (Star& s : population) {
-        if (s.isBound(getGeff(), getMass(), getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0)))
+        bool isBound = s.isBound(getGeff(), getMass(), getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0));
+        if (boundPop && isBound || !boundPop && !isBound)
             posList.push_back(s.getPos()[0]);
     }
     sort(posList.begin(), posList.end());
 
     // finding 10th, 50th, and 90th percentile values for Kelly's coeff
-    double P_ten = posList[floor(posList.size() * 0.1)];
-    double P_fifty = posList[floor(posList.size() * 0.5)];
-    double P_ninety = posList[floor(posList.size() * 0.9)];
+    double P_ten = -1, P_fifty = 0, P_ninety = 1;
+    if (posList.size() >= 10) {
+        P_ten = posList[floor(posList.size() * 0.1)];
+        P_fifty = posList[floor(posList.size() * 0.5)];
+        P_ninety = posList[floor(posList.size() * 0.9)];
+	}
 
     // Kelly's Coefficient of Skewness
-    skewness = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
+    return (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
 }
 
 void
