@@ -34,7 +34,7 @@ L=visual.label(text = str(0) , pos=(0, -7000, 0), height = 20, color=visual.colo
 #Main Program#
 linenum = 1
 line = " "
-f = open("results.txt", "r")
+f = open("Run_2results.txt", "r")
 # Until the end of the file, read line by line and process based on placement in output blocks
 while line != "end":
     line = f.readline()
@@ -54,10 +54,10 @@ while line != "end":
         outputHead = outputHead + N + 1
     # Within each code block, for each star read the position coordinates (x, y, z)
     elif (float(values[0]) not in escapee_ids):
-        r = math.sqrt(float(values[1])**2 + float(values[2])**2 + float(values[3])**2)
-        v = math.sqrt(float(values[4])**2 + float(values[5])**2 + float(values[6])**2)
-        point.append((r/10) + origin)      #(1000*math.log10(r/r_half) + origin)
-        point.append(50*v + origin)
+        r = float(values[1]) #math.sqrt(float(values[1])**2 + float(values[2])**2 + float(values[3])**2)
+        v = float(values[4]) #math.sqrt(float(values[4])**2 + float(values[5])**2 + float(values[6])**2)
+        point.append((r/2) + origin)      #(1000*math.log10(r/r_half) + origin)
+        point.append(10*v + origin)
         # if linenum % 2 == 0:
         datarray.append(point)
         if (outputNum == 1):

@@ -14,6 +14,7 @@ Nbod = []       #List of bodies used by visualpython to draw animation frames
 outputNum = 0   #Counter tracking which output section is being read
 bound = []
 unbound = []
+boundedness = []
 
 #Visual#
 scene = visual.display(title='Newton',x=0,y=0,width=800,height=1050,range=2500,autoscale=1,userspin = True,ambient=visual.color.gray(.4)) #change x location to width/n
@@ -33,11 +34,11 @@ L=visual.label(text = ' ' , pos=(0, -3000, 0), height = 20, color=visual.color.y
 #Main Program#
 linenum = 1
 line = " "
-f = open("Run_1results.txt", "r")
+f = open("results.txt", "r")    #Run_1
 # Until the end of the file, read line by line and process based on placement in output blocks
 while line != "end":
     line = f.readline()
-    visual.rate(1000)
+    visual.rate(50000)
     values=line.split()
     # At the start of each output block, update the display time and the number of bodies, N
     # then increment the outputHead tracker
@@ -48,6 +49,7 @@ while line != "end":
         timetxt = values[0]
         time = float(timetxt)
         N = int(values[1])
+        boundedness = ['b'] * N
         # read COM position and enter as first object in array
         #COM_vx = float(values[3])
         #COM_vy = float(values[4])
@@ -60,23 +62,28 @@ while line != "end":
         positions.append(float(values[2]))
         positions.append(float(values[3])) 
         datarray.append(positions)
-        if (values[7] == 'b'):
-            bound.append(float(values[0]))
-        elif (values[7] == 'u'):
-            unbound.append(float(values[0]))
+        #if (values[7] == 'b' and float(values[0]) not in bound):
+        #    if (float(values[0]) in unbound):
+        #        unbound.remove(float(values[0]))
+        #    bound.append(float(values[0]))
+        #elif (values[7] == 'u' and float(values[0]) not in unbound):
+        #    if (float(values[0]) in bound):
+        #        unbound.remove(float(values[0]))
+        #    unbound.append(float(values[0]))
         if outputNum == 1:
-            if (i in bound):
-                Nbod.append(visual.sphere(pos=(positions[0],positions[1],positions[2]),radius=50,color=(1,1,1),make_trail=1,retain=200))
-            elif (i in unbound):
-                Nbod.append(visual.sphere(pos=(positions[0],positions[1],positions[2]),radius=50,color=(1,0,0),make_trail=1,retain=200))
+            boundedness[int(values[0])] = values[7]
+            Nbod.append(visual.sphere(pos=(positions[0],positions[1],positions[2]),radius=10,color=(1,1,1),make_trail=1,retain=200))
+        else:
+            if (boundedness[int(values[0])] != values[7]):
+                boundedness[int(values[0])] = values[7]
+                if (values[7] == 'b'):
+                    Nbod[int(values[0])].color=(1,1,1)
+                elif (values[7] == 'u'):
+                    Nbod[int(values[0])].color=(1,0,0)
         positions = []
     #Before the start of a new output section, take all bodies and update their positions based on datarray values
     if linenum == outputHead - 1:
         for i in range(N):
             Nbod[i].pos=(datarray[i][0],datarray[i][1],datarray[i][2])
-            if (i in bound):
-                Nbod[i].color=(1,1,1)
-            elif (i in unbound):
-                Nbod[i].color=(1,0,0)
         datarray = []
     linenum = linenum + 1
