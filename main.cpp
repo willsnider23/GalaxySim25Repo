@@ -47,19 +47,12 @@ getModelStats(Model& stats) {
     string skim, line;
 
     // Skip file lines until specified model is reached
-    int lineNum = 0;
-    while (getline(txtFile, skim)) {
-        lineNum++;
-        if (skim == settings::modelName) break;
-    }
+    while (getline(txtFile, skim)) { if (skim == settings::modelName) break; }
     // Hash all given parameters with their associated values
     while (getline(txtFile, line) && line != "-") {
-        lineNum++;
         istringstream words(line);
         string name, eqs, value;
         words >> name >> eqs >> value;
-        //cout << "Name: " << name << " eqs: " << eqs << " Value: " 
-        //     << value << endl;
         if (value != "")
             stats[name] = stod(value);
     }
@@ -154,7 +147,7 @@ printInitConds(Model& modelStats, double Tmax, double t_cr) {
     cout << "Output Format: ";
     switch (settings::format) {
         case 0: 
-            cout << "\tAnimation [time N / ID x y z...]" << endl;
+            cout << "\tAnimation [time N rhalf / ID x y z...]" << endl;
             break;
         case 1:
             cout << "\tStatistics [ID x y z...]" << endl;
@@ -396,6 +389,34 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 }
 
 void
+printLastSnap(string outFileName, double time, int itr) {
+    ifstream dataFile(outFileName);
+    string skim, line;
+
+    // Skip file lines until specified time is reached
+    string val1, val2;
+    while (getline(dataFile, skim)) {
+        istringstream entries(skim);
+        entries >> val1 >> val2;
+        if (settings::N == stod(val2)) break;
+    }
+
+    string snapFileName;
+    if (settings::runs != 1) snapFileName = "Run_" + to_string(itr + 1) + settings::snapOutput;
+    else snapFileName = settings::snapOutput;
+    ofstream snapshotFile(snapFileName);
+
+    string id = "0";
+    while (getline(dataFile, line) && id != to_string(settings::N - 1)) {
+        istringstream entries(line);
+        entries >> id;
+        snapshotFile << line << endl;
+    } 
+    dataFile.close();
+    snapshotFile.close();
+}
+
+void
 dataDump(int itr, Galaxy& dsph, int outputCount, DataPoints& skews, DataPoints& tideOutput, DataPoints& COMrecord) {
     if (settings::trackSkews) {
         string skewFileName;
@@ -507,7 +528,7 @@ int main(int argc, char* argv[]) {
                 // Record specified data points
                 if (settings::CenterOfMass) recordCOM(time, dsph, COMrecord);
                 if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
-                if (settings::trackSkews) skews.push_back({ time, dsph.calcSkewness(true), dsph.calcSkewness(false) }); 
+                if (settings::trackSkews) skews.push_back({ time, dsph.calcSkewness(true), dsph.calcSkewness(false) });
                 output(dsph, outFile, time);
                              
                 // Check if time to write to console
@@ -523,6 +544,8 @@ int main(int argc, char* argv[]) {
         }
         cout << "Complete! :)" << endl;
         outFile.close();
+
+        if (settings::lastSnap) printLastSnap(outFileName, time, itr);
 
         // Output all remaining stored data
         dataDump(itr, dsph, outputCount, skews, tideOutput, COMrecord);

@@ -139,7 +139,7 @@ Galaxy::COMa_and_adot() {
 }
 
 double 
-Galaxy::calcSkewness( bool boundPop ) {
+Galaxy::calcSkewness(bool boundPop) {
     // get list of all x-positions in specified population
     vector<double> posList;
     for (Star& s : population) {
