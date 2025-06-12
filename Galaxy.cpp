@@ -99,21 +99,22 @@ Galaxy::getGeff() const {
 void
 Galaxy::calcCOM() {
     vector<double> sumR = { 0, 0, 0 }, sumV = { 0, 0, 0 };
-    for (Star& s : population)
-    {
+    double count = 0;
+    for (Star& s : population) {
         if (s.isBound(getGeff(), baryonCloudMass, a_s)) {
+            count++;
             vector<double> pos = s.getPos();
             vector<double> vel = s.getVel();
             for (int i = 0; i < 3; i++) {
                 if (settings::trunc_dist == -1 || calcMag(pos) < settings::trunc_dist) {
-                    sumR[i] += s.getPos()[i];
-                    sumV[i] += s.getVel()[i];
+                    sumR[i] += pos[i];
+                    sumV[i] += vel[i];
                 }
             }
         }
     }
-    centerOfMass[0] = { sumR[0] / settings::N, sumR[1] / settings::N, sumR[2] / settings::N };
-    centerOfMass[1] = { sumV[0] / settings::N, sumV[1] / settings::N, sumV[2] / settings::N };
+    centerOfMass[0] = { sumR[0] / count, sumR[1] / count, sumR[2] / count };
+    centerOfMass[1] = { sumV[0] / count, sumV[1] / count, sumV[2] / count };
 }
 
 // Newtonian acceleration and jerk of the center of mass
