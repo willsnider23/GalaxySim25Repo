@@ -17,8 +17,8 @@ using namespace std;
 namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
-    const int N = 10;                       // Number of bodies in the simulation
-    const double TmaxConst = 100;           // Fixed runtime in My
+    const int N = 500;                       // Number of bodies in the simulation
+    const double TmaxConst = 1000;           // Fixed runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
@@ -35,10 +35,10 @@ namespace settings {
     const bool extField = true;              // External Field switch
         const bool diverging = true;         // divergence of ext field
     const bool STVG = false;                 // experimental Scalar-Tensor-Vector correction based on Moffat & Toth 2023
-    const bool rhalfFeedback = false;        // recalculate r_half based on the distribution of bodies each output
     const bool g_ratios = true;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
+    const bool feedback = false;              // recalculate r_half based on the distribution of bodies each output
     const bool blackHole = false;            // include central blackhole with mass mBlack
         const double mBlack = 1e6;           // mass of central blackhole
     const bool constRuntime = true;         // fixed (true) or scale dependent (false) runtime
@@ -63,15 +63,17 @@ namespace settings {
     const int axis = 1;                      // Viewing Axis: 1 = x, 2 = y, 3 = z
     const double trunc_dist = -1;            // Distance to Truncate Dispersion & COM 
     // Output Control
-    const bool run_dispersion = false;
+    const bool run_dispersion = true;
     const bool pos_out = true, vel_out = true, acc_out = false;
-    const bool lastSnap = true;                     // Output file with only last timestep
+    const bool finalDistr = true;                     // Output file with only last timestep position distribution
     const string simOutput = "results.txt";         // Default output data file name
     const string dispOutput = "disp_dat.txt";       // Dispersion data file name
+    const string dispTimeline = "disp_timeline.txt"; // Dispersion timeline data file name
     const string COM_Output = "centerOmass.txt";    // Center of Mass data file name
     const string tidalOutput = "tidalR.txt";        // Experimental tidal radius data file name
     const string skewOutput = "skews.txt";          // Skewness data file name
-    const string snapOutput = "lastSnap.txt";      // Final timestep snapshot data file name
+    const string distrOutput = "finalDistr.txt";    // Final timestep position distribution data file name
+    const string rHalfOutput = "rhalf.txt";         // r_half data file name
         /* Format Options :
         *   0 = Animation [time N r_half / ID x y z...]
         *   1 = Statistics [ID x y z / ...]

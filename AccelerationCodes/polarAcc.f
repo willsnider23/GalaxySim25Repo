@@ -4,6 +4,12 @@
 	  open(unit=7, file= 'tang_vectors.dat')
 	  open(unit=8, file= 'acc.dat')
 	  
+	  open(unit=9, file= 'gtot.dat')
+	  open(unit=10, file= 'COMext.dat')
+	  open(unit=11, file= 'iso.dat')
+	  open(unit=12, file= 'TminE.dat')
+	  open(unit=13, file= 'diff.dat')
+
 C   Constants; units are pc, My, M-solar
 	   G = 0.0045d0
 	   a0 = 3.88d0
@@ -137,8 +143,7 @@ c--- Baryonic mass of dSph
 c	  M_b = xML * xlum
 	  M_b = 2.d8
 
-      write(*,*)'Enter the desired LOG of the internal', 
-     &' NEWTONIAN acceleration ratio at the half-mass radius'
+      write(*,*)'Enter the log(gi/a0) at the half-mass radius'
 	  read(*,*) accel_Rat_int_log ! log(a_N/a0)
 	  accel_Rat_int = 10.d0**accel_Rat_int_log
 	  r_half = sqrt(G * M_b / (2.d0 *a0*accel_Rat_int))
@@ -148,16 +153,15 @@ c	  M_b = xML * xlum
 	  
 	  R_mw = 1.d6
 	    
-	  write(*,*)'Enter the desired', 
-     &' ACTUAL external acceleration ratio (g_e/a_0)'
-	  read(*,*) accel_Rat_ext
-	  
-      accel_Rat_ext_newt = (accel_Rat_ext**2/
-     &                    (1.d0 + accel_Rat_ext))
+	  write(*,*)'Enter the log (g_e/a_0) at COM'
+	  read(*,*) accel_Rat_ext_log
+	   
+c      accel_Rat_ext_newt = (accel_Rat_ext**2/
+c     &                    (1.d0 + accel_Rat_ext))
 
       
 	  
-	  xM_mw = (accel_Rat_ext_newt * a0) * (R_mw)**2 / G
+	  xM_mw = ((10**accel_Rat_ext_log) * a0) * (R_mw**2) / G
 	  
 	  write(*,555)xM_mw
  555   format('Host Mass =', 1p,e12.3,2x, 'Solar Masses')
@@ -180,6 +184,29 @@ c --- initialize coordinates
 c--- interior mass
 
       M_int = M_b * r**3/((r**2 + a_s**2)**(1.5d0))   ! Plummer Model
+	  
+c--- external field on the COM
+      re_x = -R_mw
+	  re_y = 0
+	  
+	  re = sqrt(re_x**2 + re_y**2)
+	  re3 = re**3
+	  factor_1 = G * xM_mw /re3
+	  
+      gne_xh = -re_x * factor_1  
+	  gne_yh = -re_y * factor_1
+	  gneh = sqrt(gne_xh**2 + gne_yh**2)
+	  
+c   Lelli Nu
+      yh = gneh/a0
+	  nuh = 1.d0/(1.d0 - exp(-sqrt(yh)))
+c    Simple Nu
+c      nuh = (1.d0 + sqrt(1.d0 + 4.d0/yh))/2.d0	  
+
+	  ge_xh = nuh * gne_xh
+	  ge_yh = nuh * gne_yh
+	  
+	  geh = sqrt(ge_xh**2 + ge_yh**2)
 	  
  16   continue   ! start of loop over theta values
  
@@ -216,7 +243,7 @@ c      nui = (1.d0 + sqrt(1.d0 + 4.d0/yi))/2.d0
 	  
 	  gi_iso = sqrt(gi_iso_x**2 + gi_iso_y**2)
 	  
-c--- external accelerations
+c--- external accelerations on the star
 c--- Newtonian, x & y components & magnitude
 
       re_x = x - R_mw
@@ -238,18 +265,22 @@ c--- Polar components
 c--- MOND correction
 
 c   Lelli Nu
-      yh = gne/a0
-	  nuh = 1.d0/(1.d0 - exp(-sqrt(yh)))
+      ye = gne/a0
+	  nue = 1.d0/(1.d0 - exp(-sqrt(ye)))
 c    Simple Nu
 c      nuh = (1.d0 + sqrt(1.d0 + 4.d0/yh))/2.d0	  
 
-	  ge_x = nuh * gne_x
-	  ge_y = nuh * gne_y
+	  ge_x = nue * gne_x
+	  ge_y = nue * gne_y
 	  
-	  ge_r = nuh * gne_r
-	  ge_t = nuh * gne_t
+	  ge_r = nue * gne_r
+	  ge_t = nue * gne_t
 	  
 	  ge = sqrt(ge_x**2 + ge_y**2)
+	  
+c-- External Field on COM at (x,y)
+      ge_rh = ge_xh * cos(theta)
+	  ge_th = ge_xh * (-sin(theta))
 	  
 c--- Total Newtonian accelerations
 
@@ -260,7 +291,7 @@ c--- Total Newtonian accelerations
 	  gntot_r = gntot_x * cos(theta) + gntot_y * sin(theta)
 	  gntot_t = gntot_x * (-sin(theta)) + gntot_y * cos(theta)
 	  
-c--- External Field Effect gi = nu*gt - nu*ge
+c--- External Field Effect gi = nu*gt - nu*geh
 
 c   Lelli Nu
       yn = (gntot)/a0
@@ -275,8 +306,11 @@ c--- Total Acceleration
 	  
 	  gtot = sqrt(gtot_x**2 + gtot_y**2)
 	  
-	  gi_x = gtot_x - ge_x
-	  gi_y = gtot_y - ge_y
+	  gtot_r = gtot_x * cos(theta) + gtot_y * sin(theta)
+	  gtot_t = gtot_x * (-sin(theta)) + gtot_y * cos(theta)
+	  
+	  gi_x = gtot_x - ge_xh
+	  gi_y = gtot_y - ge_yh
 	  
 	  gi_r = gi_x * cos(theta) + gi_y * sin(theta)
 	  gi_t = gi_x * (-sin(theta)) + gi_y * cos(theta)
@@ -293,17 +327,46 @@ c---- Normalize all accelerations to a0
       gtota = gtot/a0				! MOND total	  
 	  gia    = gi/a0				! MOND internal (w/ EFE)
 	  
-	  gi_ra  = gi_r/a0
-	  gi_ta  = gi_t/a0				! Tangential comp of integrated internal acc
-	  ge_ra  = ge_r/a0
-	  ge_ta  = ge_t/a0
+	  
+ 2024 format(4e14.6)
+ 
+	  gtot_ra = gtot_r/a0
+	  gtot_ta = gtot_t/a0
+	  gtot_r_out = sign(1.d0,gtot_ra)*log10(sign(gtot_ra,0.d0)+1)
+	  write(9,2024) x/r, y/r, theta, gtot_r_out
+	  gtot_t_out = sign(1.d0,gtot_ta)*log10(sign(gtot_ta,0.d0)+1)
+      write(9,2024) x/r, y/r, theta + (pi/2.0), gtot_t_out
+	  
+	  ge_rha = ge_rh/a0
+	  ge_tha = ge_th/a0
+	  write(10,2024) x/r, y/r, theta, ge_rha
+      write(10,2024) x/r, y/r, theta + (pi/2.0), ge_tha
+
 	  gi_iso_ra = gi_iso_r/a0
 	  gi_iso_ta = gi_iso_t/a0
+	  write(11,2024) x/r, y/r, theta, gi_iso_ra
+      write(11,2024) x/r, y/r, theta + (pi/2.0), gi_iso_ta
+	  
+	  tidal_r = gtot_ra - ge_rha
+	  tidal_t = gtot_ta - ge_tha
+	  write(12,2024) x/r, y/r, theta, tidal_r
+      write(12,2024) x/r, y/r, theta + (pi/2.0), tidal_t
+	  
+	  write(13,2024) x/r, y/r, theta, tidal_r - gi_iso_ra
+      write(13,2024) x/r, y/r, theta + (pi/2.0), tidal_t - gi_iso_ta  
+	  
+	  
+	  gi_ra  = gi_r/a0
+	  gi_ta  = gi_t/a0				! Tangential comp of integrated internal acc
+	  
+	  ge_ra  = ge_r/a0
+	  ge_ta  = ge_t/a0
+	  
 	  gne_ra = gne_r/a0
 	  gne_ta = gne_t/a0
 	  
-	  diff_x = gtot_x - gi_iso_x - ge_x
-	  diff_y = gtot_y - gi_iso_y - ge_y
+	  diff_x = gtot_x - gi_iso_x - ge_xh
+	  diff_y = gtot_y - gi_iso_y - ge_yh
 	  diff_r = diff_x * cos(theta) + diff_y * sin(theta)
 	  diff_t = diff_x * (-sin(theta)) + diff_y * cos(theta)
 	  
@@ -313,7 +376,6 @@ c---- Normalize all accelerations to a0
      &             , gi_iso_ta, diff_r, diff_t			!gi_xa,ge_xa,gni_xa,gi_iso_xa
 	 
 	  
- 2024 format(4e14.6)
       write(7,2024) x, y, theta + (pi/2.0), 1000 * diff_t
 	  write(7,2024) x, y, theta, 1000 * diff_r
 	  
