@@ -67,6 +67,8 @@ public:
     setPopulation(vector<Star> pop) { population = pop; }
 // Mutators
     void
+    updateRHalf();
+    void
     calcCOM();
     void
     COMa_and_adot();

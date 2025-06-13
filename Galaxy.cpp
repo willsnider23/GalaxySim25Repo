@@ -85,17 +85,31 @@ Galaxy::calcAnisotropyFactor() {
     return 1 - (sigma2_t / sigma2_r);
 }
 
-// G_eff from external field mag at r_half for v_esc
+// G_eff from external field mag at origin for v_esc
 double
 Galaxy::getGeff() const {
-    double re = r_half - host_R;
+    double re = - host_R;
     double gne = re * consts::G * host_M / pow(re, 3);
     double nu = 1.0 / (1.0 - exp(-sqrt(gne / consts::a_mond)));
     double ge = nu * gne;
-    return consts::a_mond * consts::G / ge;
+    return consts::G * sqrt(consts::a_mond / gne);                       // G times limiting behavior of nu(y) ~ 1/sqrt(y)
 }
 
 // Mutators
+void
+Galaxy::updateRHalf() {
+    vector<Star> stars = population;
+    sort(stars.begin(), stars.end(),
+        [](Star& a, Star& b) {
+            return a.getPosSph()[0] < a.getPosSph()[0];
+        });
+    int medianId = floor(settings::N / 2.0);
+    double medianR = stars[medianId].getPosSph()[0];
+    double deltaR = stars[medianId + 1].getPosSph()[0] - medianR;
+    r_half = medianR + ((settings::N / 2.0) - medianId) * deltaR;
+    a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
+}
+
 void
 Galaxy::calcCOM() {
     vector<double> sumR = { 0, 0, 0 }, sumV = { 0, 0, 0 };

@@ -27,6 +27,8 @@ ring = visual.ring(pos=(0,0,0), axis=(0,0,1), radius=1000, thickness=4, color=vi
 ring = visual.ring(pos=(0,0,0), axis=(0,0,1), radius=2000, thickness=4, color=visual.color.red)
 ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=1000, thickness=4, color=visual.color.blue)
 ring = visual.ring(pos=(0,0,0), axis=(0,1,0), radius=2000, thickness=4, color=visual.color.red)
+ring = visual.ring(pos=(0,0,0), axis=(0,0,1), radius=4000, thickness=4, color=visual.color.white)
+ring = visual.ring(pos=(0,0,0), axis=(0,0,1), radius=6000, thickness=4, color=visual.color.white)
 #ring = visual.ring(pos=(2000,0,0), axis=(0,0,1), radius=500, thickness=25, color=visual.color.white)
 #ring = visual.ring(pos=(2000,0,0), axis=(0,1,0), radius=500, thickness=25, color=visual.color.white)
 L=visual.label(text = ' ' , pos=(0, -3000, 0), height = 20, color=visual.color.yellow)
