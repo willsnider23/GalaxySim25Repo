@@ -17,15 +17,17 @@ using namespace std;
 namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
-    const int N = 500;                       // Number of bodies in the simulation
-    const double TmaxConst = 1000;           // Fixed runtime in My
+    const int N = 5000;                       // Number of bodies in the simulation
+    const double TmaxConst = 2000;           // Fixed runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
     const double consolePeriod = 2.5;          // Seconds of execution time per write (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
-    const double runs = 1;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+    const double runs = 8;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+        const vector<double> log_gi_a0 = { -2, -1, 0, 1 };
+        const vector<double> log_ge_a0 = { -2, -1 };
 
     /* Switches
             doubles: off = -1
@@ -47,7 +49,7 @@ namespace settings {
     *   1 = g_total - ge_COM       (tidal)    */ 
     const int integ_acc = 1;
     // Data Tracking
-    const bool CenterOfMass = false;          // tracks center of mass
+    const bool CenterOfMass = true;          // tracks center of mass
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
     const bool trackSkews = true;            // records skew param at every console output
     const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity
