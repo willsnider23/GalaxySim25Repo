@@ -70,8 +70,8 @@ getModelStats(Model& stats) {
 
 void setModelStats(Model& stats, int itr) {
     double log_int_rat;
-    vector<double> log_gi_a0 = { -1, 0, 1 }; 
-    vector<double> log_ge_a0 = { 0, 1 };
+    vector<double> log_gi_a0 = { -2, -1, 0, 1 }; 
+    vector<double> log_ge_a0 = { -2, -1 };
 
     if (settings::runs == 1) {
         cout << "Enter newtonian log(gi/a0) at r_half: ";
@@ -228,10 +228,10 @@ output(Galaxy& g, ofstream& outFile, double time) {
             outFile << "b" << "\t";
         else
             outFile << "u" << "\t";
-        if (pop[i].isFrozen())
-            outFile << "f" << "\t";
-        else
-            outFile << "m" << "\t";
+        // if (pop[i].isFrozen())
+        //     outFile << "f" << "\t";
+        // else
+        //     outFile << "m" << "\t";
         outFile << endl;
     }
 }
@@ -337,7 +337,11 @@ dispersion(int outputCount, int itr) {
     cout << "Running Dispersion Calculation" << endl;
     cout << "Number of data records = " << outputCount << endl;
 
-    ifstream read(settings::simOutput);
+    string readFileName;
+    if (settings::runs != 1) readFileName = "Run_" + to_string(itr + 1) + settings::simOutput;
+    else readFileName = settings::simOutput;
+    ifstream read(readFileName);
+
     DataPoints projection, snapDisp;
     vector<DataPoints> dispTimeline = {};
     for (int i = 0; i < outputCount; i++) {
