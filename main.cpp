@@ -138,7 +138,7 @@ printInitConds(Model& modelStats, double Tmax, double t_cr) {
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
     if (settings::extField) {
-        cout << "\tExt Field: \t\tON" << endl;
+        cout << "\tExt Field: \tON" << endl;
         cout << "\t\tHost Mass: \t" << modelStats["M_mw"] << " solar masses" << endl;
         cout << "\t\tTidal Radius: \t" << modelStats["r_tidal"] << " pc" << endl;
     }
