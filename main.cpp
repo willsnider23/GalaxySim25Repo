@@ -253,7 +253,7 @@ minTimeStar(Galaxy& g) {
 DataPoints
 makeProjection(ifstream& read) {
     
-    string line, Time, skip, ID;
+    string line, Time, skip, ID, bound;
     string X, Y, Z, VX, VY, VZ; // , ax, ay, az;
     double x, y, z, vx, vy, vz;
     double r, perp_r, v_rad;
@@ -266,12 +266,12 @@ makeProjection(ifstream& read) {
         for (int s = 0; s < settings::N; s++) {
             getline(read, line);
             istringstream vals(line);
-            vals >> ID >> X >> Y >> Z >> VX >> VY >> VZ;
+            vals >> ID >> X >> Y >> Z >> VX >> VY >> VZ >> bound;
             // if (settings::acc_out) vals >> ax >> ay >> az;
             x = stod(X); y = stod(Y); z = stod(Z);
             vx = stod(VX); vy = stod(VY); vz = stod(VZ);
             r = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-            if (settings::trunc_dist == -1 || r <= settings::trunc_dist) {
+            if (bound == "b") {
                 if (settings::axis == 1) {
                     perp_r = sqrt(pow(y, 2) + pow(z, 2));
                     v_rad = vx;
@@ -293,17 +293,18 @@ makeProjection(ifstream& read) {
 DataPoints
 binDispersion(DataPoints& projection) {
     DataPoints profile = {};
-    for (double i = 0; i < settings::bins; i++) {
+	int projBins = floor(sqrt(projection.size()));
+    for (double i = 0; i < projBins; i++) {
         double r_sum = 0, v_sum = 0, v2_sum = 0;
-        for (double star = 0; star < settings::bins; star++) {
-            double id = settings::bins * i + star;
+        for (double star = 0; star < projBins; star++) {
+            double id = projBins * i + star;
             r_sum += projection[id][0];
             v_sum += projection[id][1];
             v2_sum += pow(projection[id][1], 2);
         }
-        double r_avg = r_sum / settings::bins;
-        double v_avg = v_sum / settings::bins;
-        double v2_avg = v2_sum / settings::bins;
+        double r_avg = r_sum / projBins;
+        double v_avg = v_sum / projBins;
+        double v2_avg = v2_sum / projBins;
         double sigma = sqrt(v2_avg - pow(v_avg, 2));
         profile.push_back({ r_avg, sigma });
     }
@@ -316,7 +317,7 @@ outputDispProfile(const DataPoints& profile, int itr) {
     if (settings::runs != 1) dispFileName = "Run_" + to_string(itr+1) + settings::dispOutput;
     else dispFileName = settings::dispOutput;
     ofstream out(dispFileName);
-    for (int i = 0; i < settings::bins; i++) {
+    for (int i = 0; i < profile.size(); i++) {
         out << profile[i][0] << "\t" << profile[i][1] << endl;
     }
 }
@@ -324,7 +325,7 @@ outputDispProfile(const DataPoints& profile, int itr) {
 double
 calcBulkDispersion(DataPoints& profile) {
     double bulk = 0;
-    for (int b = 0; b < settings::bins; b++) {
+    for (int b = 0; b < profile.size(); b++) {
         bulk += profile[b][1];
     }
     return (bulk / settings::bins);
@@ -360,16 +361,19 @@ dispersion(int outputCount, int itr) {
     ofstream out(timelineFileName);
 
     DataPoints profile = {};
-    for (int b = 0; b < settings::bins; b++) {
-        double r_sum = 0, sig_sum = 0;
+    int projBins = dispTimeline[0].size();
+    for (int b = 0; b < projBins; b++) {
+        double r_sum = 0, sig_sum = 0, binCount = 0;
         for (int t = 0; t < outputCount; t++) {
+			if (b >= dispTimeline[t].size()) continue; // skip if bin is out of range
             out << dispTimeline[t][b][0] << "\t" << dispTimeline[t][b][1] << endl;
             r_sum += dispTimeline[t][b][0];
             sig_sum += dispTimeline[t][b][1];
+			binCount++;
         }
         // Take average and convert disp units to km/s
-        double r_avg = r_sum / outputCount;
-        double sig_avg = sig_sum * 0.978 / outputCount;
+        double r_avg = r_sum / binCount;
+        double sig_avg = sig_sum * 0.978 / binCount;
         profile.push_back({ r_avg, sig_avg });
         //dispOut << r_avg << ", " << sig_avg
     }
