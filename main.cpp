@@ -111,7 +111,8 @@ printInitConds(Model& modelStats, double Tmax, double t_cr) {
     else {
         cout << "Acc Ratios:" << endl;
         cout << "\tgi/a0 = " << pow(10, modelStats["log_int_rat"]) << endl;
-        cout << "\tge/a0 = " << pow(10, modelStats["log_ext_rat"]) << endl;
+        if (settings::extField)
+            cout << "\tge/a0 = " << pow(10, modelStats["log_ext_rat"]) << endl;
     }
     cout << "Dsph Mass: \t" << modelStats["mass"] << " solar masses" << endl;
     cout << "Pop. Size: \t" << settings::N << endl;
