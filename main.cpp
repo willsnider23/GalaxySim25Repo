@@ -272,7 +272,7 @@ makeProjection(ifstream& read) {
             x = stod(X); y = stod(Y); z = stod(Z);
             vx = stod(VX); vy = stod(VY); vz = stod(VZ);
             r = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-            if (bound == "b") {
+            if (!settings::extField || bound == "b") {
                 if (settings::axis == 1) {
                     perp_r = sqrt(pow(y, 2) + pow(z, 2));
                     v_rad = vx;
