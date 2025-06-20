@@ -25,9 +25,9 @@ namespace settings {
     const double consolePeriod = 2.5;          // Seconds of execution time per write (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
-    const double runs = 8;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
-        const vector<double> log_gi_a0 = { -2, -1, 0, 1 };
-        const vector<double> log_ge_a0 = { -2, -1 };
+    const double runs = 5;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+        const vector<double> log_gi_a0 = { -1.5, -0.5, 0.5, 1.5, 2 };
+        const vector<double> log_ge_a0 = { 1, 0, 0, 0, 0 };
 
     /* Switches
             doubles: off = -1
