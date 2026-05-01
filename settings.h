@@ -25,7 +25,9 @@ namespace settings {
     const double consolePeriod = 2.5;          // Seconds of execution time per write (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
-    const double runs = 1;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+    const double runs = 5;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+        const vector<double> log_gi_a0 = { -1.5, -0.5, 0.5, 1.5, 2 };
+        const vector<double> log_ge_a0 = { 1, 0, 0, 0, 0 };
 
     /* Switches
             doubles: off = -1
@@ -38,6 +40,7 @@ namespace settings {
     const bool g_ratios = false;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
+    const bool feedback = false;              // recalculate r_half based on the distribution of bodies each output
     const bool blackHole = false;            // include central blackhole with mass mBlack
         const double mBlack = 1e6;           // mass of central blackhole
     const bool constRuntime = true;         // fixed (true) or scale dependent (false) runtime
@@ -47,7 +50,7 @@ namespace settings {
     *   1 = g_total - ge_COM       (tidal)    */ 
     const int integ_acc = 1;
     // Data Tracking
-    const bool CenterOfMass = false;          // tracks center of mass
+    const bool CenterOfMass = true;          // tracks center of mass
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
     const bool trackSkews = true;            // records skew param at every console output
     const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity
@@ -70,6 +73,15 @@ namespace settings {
     const string skewOutput = "skews.txt";
     const bool run_dispersion = true;
     const bool pos_out = true, vel_out = true, acc_out = false;
+    const bool finalDistr = true;                     // Output file with only last timestep position distribution
+    const string simOutput = "results.txt";         // Default output data file name
+    const string dispOutput = "disp_dat.txt";       // Dispersion data file name
+    const string dispTimeline = "disp_timeline.txt"; // Dispersion timeline data file name
+    const string COM_Output = "centerOmass.txt";    // Center of Mass data file name
+    const string tidalOutput = "tidalR.txt";        // Experimental tidal radius data file name
+    const string skewOutput = "skews.txt";          // Skewness data file name
+    const string distrOutput = "finalDistr.txt";    // Final timestep position distribution data file name
+    const string rHalfOutput = "rhalf.txt";         // r_half data file name
         /* Format Options :
         *   0 = Animation [time N r_half / ID x y z...]
         *   1 = Statistics [ID x y z / ...]

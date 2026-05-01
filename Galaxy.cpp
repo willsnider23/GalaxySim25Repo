@@ -85,33 +85,50 @@ Galaxy::calcAnisotropyFactor() {
     return 1 - (sigma2_t / sigma2_r);
 }
 
-// G_eff from external field mag at r_half for v_esc
+// G_eff from external field mag at origin for v_esc
 double
 Galaxy::getGeff() const {
-    double re = r_half - host_R;
+    double re = - host_R;
     double gne = re * consts::G * host_M / pow(re, 3);
     double nu = 1.0 / (1.0 - exp(-sqrt(gne / consts::a_mond)));
     double ge = nu * gne;
-    return consts::a_mond * consts::G / ge;
+    return consts::G * sqrt(consts::a_mond / gne);                       // G times limiting behavior of nu(y) ~ 1/sqrt(y)
 }
 
 // Mutators
 void
+Galaxy::updateRHalf() {
+    vector<Star> stars = population;
+    sort(stars.begin(), stars.end(),
+        [](Star& a, Star& b) {
+            return a.getPosSph()[0] < a.getPosSph()[0];
+        });
+    int medianId = floor(settings::N / 2.0);
+    double medianR = stars[medianId].getPosSph()[0];
+    double deltaR = stars[medianId + 1].getPosSph()[0] - medianR;
+    r_half = medianR + ((settings::N / 2.0) - medianId) * deltaR;
+    a_s = r_half * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0);
+}
+
+void
 Galaxy::calcCOM() {
     vector<double> sumR = { 0, 0, 0 }, sumV = { 0, 0, 0 };
-    for (Star& s : population)
-    {
-        vector<double> pos = s.getPos();
-        vector<double> vel = s.getVel();
-        for (int i = 0; i < 3; i++) {
-            if (settings::trunc_dist == -1 || calcMag(pos) < settings::trunc_dist) {
-                sumR[i] += s.getPos()[i];
-                sumV[i] += s.getVel()[i];
+    double count = 0;
+    for (Star& s : population) {
+        if (s.isBound(getGeff(), baryonCloudMass, a_s)) {
+            count++;
+            vector<double> pos = s.getPos();
+            vector<double> vel = s.getVel();
+            for (int i = 0; i < 3; i++) {
+                if (settings::trunc_dist == -1 || calcMag(pos) < settings::trunc_dist) {
+                    sumR[i] += pos[i];
+                    sumV[i] += vel[i];
+                }
             }
         }
     }
-    centerOfMass[0] = { sumR[0] / settings::N, sumR[1] / settings::N, sumR[2] / settings::N };
-    centerOfMass[1] = { sumV[0] / settings::N, sumV[1] / settings::N, sumV[2] / settings::N };
+    centerOfMass[0] = { sumR[0] / count, sumR[1] / count, sumR[2] / count };
+    centerOfMass[1] = { sumV[0] / count, sumV[1] / count, sumV[2] / count };
 }
 
 // Newtonian acceleration and jerk of the center of mass
@@ -138,23 +155,27 @@ Galaxy::COMa_and_adot() {
     }
 }
 
-void 
-Galaxy::calcSkewness() {
-    // get list of all x-positions in population
+double 
+Galaxy::calcSkewness(bool boundPop) {
+    // get list of all x-positions in specified population
     vector<double> posList;
     for (Star& s : population) {
-        if (s.isBound(getGeff(), getMass(), getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0)))
+        bool isBound = s.isBound(getGeff(), getMass(), getRHalf() * sqrt(pow(2.0, (2.0 / 3.0)) - 1.0));
+        if (boundPop && isBound || !boundPop && !isBound)
             posList.push_back(s.getPos()[0]);
     }
     sort(posList.begin(), posList.end());
 
     // finding 10th, 50th, and 90th percentile values for Kelly's coeff
-    double P_ten = posList[floor(posList.size() * 0.1)];
-    double P_fifty = posList[floor(posList.size() * 0.5)];
-    double P_ninety = posList[floor(posList.size() * 0.9)];
+    double P_ten = -1, P_fifty = 0, P_ninety = 1;
+    if (posList.size() >= 10) {
+        P_ten = posList[floor(posList.size() * 0.1)];
+        P_fifty = posList[floor(posList.size() * 0.5)];
+        P_ninety = posList[floor(posList.size() * 0.9)];
+	}
 
     // Kelly's Coefficient of Skewness
-    skewness = (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
+    return (P_ninety - 2*P_fifty + P_ten) / (P_ninety - P_ten);
 }
 
 void
