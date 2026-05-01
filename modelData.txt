@@ -73,12 +73,12 @@ r_half = 28.d0
 R_mw = 28.d3
 M_L = 10.d0
 -
-Andromeda XIX
-lum = 3.31d5
-r_half = 1799.d0
-R_mw = 116.d3   
-M_mw = 2.d0 * M_mw  !need baryonic mass of Andromeda, for now take twice M_mw
-M_L = 2.d0
+Andromeda XIX (Alexander 2017)
+lum = 4.1e5
+r_half = 2244.e0
+R_mw = 189.e3   
+M_mw = 1.44e11 
+M_L = 1.e0
 -
 Carina
 lum = 2.4d5

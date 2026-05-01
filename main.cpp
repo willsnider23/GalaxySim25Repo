@@ -315,7 +315,7 @@ void
 outputDispProfile(const PairList& profile, int itr) {
     string dispFileName;
     if (settings::runs != 1) dispFileName = "Run_" + to_string(itr+1) + settings::dispOutput;
-    else dispFileName = settings::skewOutput;
+    else dispFileName = settings::dispOutput;
     ofstream out(dispFileName);
     for (int i = 0; i < settings::bins; i++) {
         out << profile[i][0] << "\t" << profile[i][1] << endl;
