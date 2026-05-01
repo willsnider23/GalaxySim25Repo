@@ -23,7 +23,7 @@ using namespace std;
 using namespace std::string_literals;
 using PosMat = vector<vector<double>>;
 using Model = unordered_map<string, double>;
-using PairList = vector<vector<double>>;
+using DataPoints = vector<vector<double>>;
 
 class Timer
 {
@@ -47,19 +47,12 @@ getModelStats(Model& stats) {
     string skim, line;
 
     // Skip file lines until specified model is reached
-    int lineNum = 0;
-    while (getline(txtFile, skim)) {
-        lineNum++;
-        if (skim == settings::modelName) break;
-    }
+    while (getline(txtFile, skim)) { if (skim == settings::modelName) break; }
     // Hash all given parameters with their associated values
     while (getline(txtFile, line) && line != "-") {
-        lineNum++;
         istringstream words(line);
         string name, eqs, value;
         words >> name >> eqs >> value;
-        //cout << "Name: " << name << " eqs: " << eqs << " Value: " 
-        //     << value << endl;
         if (value != "")
             stats[name] = stod(value);
     }
@@ -77,18 +70,15 @@ getModelStats(Model& stats) {
 
 void setModelStats(Model& stats, int itr) {
     double log_int_rat;
-    vector<double> log_gi_a0 = { -2, -1, 0, 1 }; 
-    vector<double> log_ge_a0 = { -2, -1, 0, 1 };
 
     if (settings::runs == 1) {
         cout << "Enter newtonian log(gi/a0) at r_half: ";
         cin >> log_int_rat;
     } else {
-        cout << "Using log(gi/a0) = " << log_gi_a0[itr % log_gi_a0.size()] << endl;
-        log_int_rat = log_gi_a0[itr % log_gi_a0.size()];
+        cout << "Using log(gi/a0) = " << settings::log_gi_a0[itr % settings::log_gi_a0.size()] << endl;
+        log_int_rat = settings::log_gi_a0[itr % settings::log_gi_a0.size()];
     }
     stats["log_int_rat"] = log_int_rat;
-    cout << endl;
 
     stats["mass"] = settings::toy_mass;
     stats["r_half"] = sqrt(consts::G * settings::toy_mass / (2.0 * consts::a_mond * pow(10, log_int_rat)));
@@ -100,11 +90,10 @@ void setModelStats(Model& stats, int itr) {
             cout << "Enter newtonian log(ge/a0) at CoM: ";
             cin >> log_ext_rat;
         } else {
-            cout << "Using log(ge/a0) = " << log_ge_a0[itr / log_ge_a0.size()] << endl;
-            log_ext_rat = log_ge_a0[itr / log_ge_a0.size()];
+            cout << "Using log(ge/a0) = " << settings::log_ge_a0[itr / settings::log_ge_a0.size()] << endl;
+            log_ext_rat = settings::log_ge_a0[itr / settings::log_ge_a0.size()];
         }
         stats["log_ext_rat"] = log_ext_rat;
-        cout << endl;
 
         stats["R_mw"] = settings::toy_hostR;
         // double ext_rat_N = pow(ext_rat, 2) / (1 + ext_rat);  -- used if ext_rat is dynamic/MOND ratio
@@ -116,18 +105,20 @@ void setModelStats(Model& stats, int itr) {
 }
 
 void
-printInitConds(Model& modelStats, double Tmax) {
-    cout << "\nRunning with the following initial conditions..." << endl;
+printInitConds(Model& modelStats, double Tmax, double t_cr) {
+    cout << "Running with the following initial conditions...\n" << endl;
     if (!settings::g_ratios) cout << "Model Name: " << settings::modelName << endl;
     else {
         cout << "Acc Ratios:" << endl;
         cout << "\tgi/a0 = " << pow(10, modelStats["log_int_rat"]) << endl;
-        cout << "\tge/a0 = " << pow(10, modelStats["log_ext_rat"]) << endl;
+        if (settings::extField)
+            cout << "\tge/a0 = " << pow(10, modelStats["log_ext_rat"]) << endl;
     }
     cout << "Dsph Mass: \t" << modelStats["mass"] << " solar masses" << endl;
     cout << "Pop. Size: \t" << settings::N << endl;
     cout << "R_Half: \t" << modelStats["r_half"] << " pc" << endl;
     cout << "Mass % Limit: \t" << settings::massPerc << endl;
+    cout << "Crossing Time: \t" << t_cr / 1000 << " billion years" << endl;
     cout << "Runtime: \t" << (Tmax) / 1000 << " billion years" << endl;
     cout << "Switches:" << endl;
     cout << "\tPrinting: ";
@@ -146,14 +137,14 @@ printInitConds(Model& modelStats, double Tmax) {
     if (settings::blackHole) cout << "\t\t\tmass: " << settings::mBlack << endl;
     if (settings::MOND) cout << "\tMOND: \t\tON" << endl;
     if (settings::extField) {
-        cout << "\tExt Field: \t\tON" << endl;
+        cout << "\tExt Field: \tON" << endl;
         cout << "\t\tHost Mass: \t" << modelStats["M_mw"] << " solar masses" << endl;
         cout << "\t\tTidal Radius: \t" << modelStats["r_tidal"] << " pc" << endl;
     }
     cout << "Output Format: ";
     switch (settings::format) {
         case 0: 
-            cout << "\tAnimation [time N / ID x y z...]" << endl;
+            cout << "\tAnimation [time N rhalf / ID x y z...]" << endl;
             break;
         case 1:
             cout << "\tStatistics [ID x y z...]" << endl;
@@ -162,10 +153,13 @@ printInitConds(Model& modelStats, double Tmax) {
             cout << "\tAnimation w/ COM [time N COM / ID x y z...]" << endl;
             break;
     }
+    cout << endl;
+    cout << "Time\t\tOutput #\t\Elapsed Time" << endl;
+    cout << "----------------------------------------" << endl;
 }
 
 void
-recordCOM(double time, Galaxy& g, vector<vector<double>>& out) {
+recordCOM(double time, Galaxy& g, DataPoints& out) {
     g.calcCOM();
     PosMat COM = g.getCOM();
     vector<double> record(7, 0);
@@ -175,7 +169,7 @@ recordCOM(double time, Galaxy& g, vector<vector<double>>& out) {
 }
 
 void
-recordTides(double time, Galaxy& g, vector<vector<double>>& out) {
+recordTides(double time, Galaxy& g, DataPoints& out) {
     if (time == 0) out.push_back({ g.getRTidal() });
 
     double r_tidal_exp = 0;
@@ -188,6 +182,12 @@ recordTides(double time, Galaxy& g, vector<vector<double>>& out) {
         }
     }
     out.push_back({ time, r_tidal_exp });
+}
+
+void
+recordRHalf(double time, Galaxy& g, DataPoints& out) {
+    g.updateRHalf();
+    out.push_back({ time, g.getRHalf() });
 }
 
 void
@@ -227,10 +227,10 @@ output(Galaxy& g, ofstream& outFile, double time) {
             outFile << "b" << "\t";
         else
             outFile << "u" << "\t";
-        if (pop[i].isFrozen())
-            outFile << "f" << "\t";
-        else
-            outFile << "m" << "\t";
+        // if (pop[i].isFrozen())
+        //     outFile << "f" << "\t";
+        // else
+        //     outFile << "m" << "\t";
         outFile << endl;
     }
 }
@@ -251,15 +251,15 @@ minTimeStar(Galaxy& g) {
     return g.getStar(minIdx);
 }
 
-PairList
+DataPoints
 makeProjection(ifstream& read) {
     
-    string line, Time, skip, ID;
+    string line, Time, skip, ID, bound;
     string X, Y, Z, VX, VY, VZ; // , ax, ay, az;
     double x, y, z, vx, vy, vz;
     double r, perp_r, v_rad;
 
-    PairList projection = {};
+    DataPoints projection = {};
     getline(read, line);
     istringstream head(line);
     head >> Time >> skip;
@@ -267,12 +267,12 @@ makeProjection(ifstream& read) {
         for (int s = 0; s < settings::N; s++) {
             getline(read, line);
             istringstream vals(line);
-            vals >> ID >> X >> Y >> Z >> VX >> VY >> VZ;
+            vals >> ID >> X >> Y >> Z >> VX >> VY >> VZ >> bound;
             // if (settings::acc_out) vals >> ax >> ay >> az;
             x = stod(X); y = stod(Y); z = stod(Z);
             vx = stod(VX); vy = stod(VY); vz = stod(VZ);
             r = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-            if (settings::trunc_dist == -1 || r <= settings::trunc_dist) {
+            if (!settings::extField || bound == "b") {
                 if (settings::axis == 1) {
                     perp_r = sqrt(pow(y, 2) + pow(z, 2));
                     v_rad = vx;
@@ -291,20 +291,21 @@ makeProjection(ifstream& read) {
     return projection;
 }
 
-PairList
-binDispersion(PairList& projection) {
-    PairList profile = {};
-    for (double i = 0; i < settings::bins; i++) {
+DataPoints
+binDispersion(DataPoints& projection) {
+    DataPoints profile = {};
+	int projBins = floor(sqrt(projection.size()));
+    for (double i = 0; i < projBins; i++) {
         double r_sum = 0, v_sum = 0, v2_sum = 0;
-        for (double star = 0; star < settings::bins; star++) {
-            double id = settings::bins * i + star;
+        for (double star = 0; star < projBins; star++) {
+            double id = projBins * i + star;
             r_sum += projection[id][0];
             v_sum += projection[id][1];
             v2_sum += pow(projection[id][1], 2);
         }
-        double r_avg = r_sum / settings::bins;
-        double v_avg = v_sum / settings::bins;
-        double v2_avg = v2_sum / settings::bins;
+        double r_avg = r_sum / projBins;
+        double v_avg = v_sum / projBins;
+        double v2_avg = v2_sum / projBins;
         double sigma = sqrt(v2_avg - pow(v_avg, 2));
         profile.push_back({ r_avg, sigma });
     }
@@ -312,20 +313,20 @@ binDispersion(PairList& projection) {
 }
 
 void
-outputDispProfile(const PairList& profile, int itr) {
+outputDispProfile(const DataPoints& profile, int itr) {
     string dispFileName;
     if (settings::runs != 1) dispFileName = "Run_" + to_string(itr+1) + settings::dispOutput;
-    else dispFileName = settings::skewOutput;
+    else dispFileName = settings::dispOutput;
     ofstream out(dispFileName);
-    for (int i = 0; i < settings::bins; i++) {
+    for (int i = 0; i < profile.size(); i++) {
         out << profile[i][0] << "\t" << profile[i][1] << endl;
     }
 }
 
 double
-calcBulkDispersion(PairList& profile) {
+calcBulkDispersion(DataPoints& profile) {
     double bulk = 0;
-    for (int b = 0; b < settings::bins; b++) {
+    for (int b = 0; b < profile.size(); b++) {
         bulk += profile[b][1];
     }
     return (bulk / settings::bins);
@@ -336,13 +337,17 @@ dispersion(int outputCount, int itr) {
     cout << "Running Dispersion Calculation" << endl;
     cout << "Number of data records = " << outputCount << endl;
 
-    ifstream read(settings::simOutput);
-    PairList projection, snapDisp;
-    vector<PairList> dispTimeline = {};
+    string readFileName;
+    if (settings::runs != 1) readFileName = "Run_" + to_string(itr + 1) + settings::simOutput;
+    else readFileName = settings::simOutput;
+    ifstream read(readFileName);
+
+    DataPoints projection, snapDisp;
+    vector<DataPoints> dispTimeline = {};
     for (int i = 0; i < outputCount; i++) {
         projection = makeProjection(read);
         sort(projection.begin(), projection.end(),
-            [](const std::vector<double>& a, const std::vector<double>& b) {
+            [](const vector<double>& a, const vector<double>& b) {
                 return a[0] < b[0];
             });
         snapDisp = binDispersion(projection);
@@ -351,16 +356,25 @@ dispersion(int outputCount, int itr) {
     read.close();
     cout << "Dispersion timeline created" << endl;
 
-    PairList profile = {};
-    for (int b = 0; b < settings::bins; b++) {
-        double r_sum = 0, sig_sum = 0;
+    string timelineFileName;
+    if (settings::runs != 1) timelineFileName = "Run_" + to_string(itr + 1) + settings::dispTimeline;
+    else timelineFileName = settings::dispTimeline;
+    ofstream out(timelineFileName);
+
+    DataPoints profile = {};
+    int projBins = dispTimeline[0].size();
+    for (int b = 0; b < projBins; b++) {
+        double r_sum = 0, sig_sum = 0, binCount = 0;
         for (int t = 0; t < outputCount; t++) {
+			if (b >= dispTimeline[t].size()) continue; // skip if bin is out of range
+            out << dispTimeline[t][b][0] << "\t" << dispTimeline[t][b][1] << endl;
             r_sum += dispTimeline[t][b][0];
             sig_sum += dispTimeline[t][b][1];
+			binCount++;
         }
         // Take average and convert disp units to km/s
-        double r_avg = r_sum / outputCount;
-        double sig_avg = sig_sum * 0.978 / outputCount;
+        double r_avg = r_sum / binCount;
+        double sig_avg = sig_sum * 0.978 / binCount;
         profile.push_back({ r_avg, sig_avg });
         //dispOut << r_avg << ", " << sig_avg
     }
@@ -395,14 +409,58 @@ dispPredHaghi(double M, double r_half, double hostR, double hostM) {
 }
 
 void
-dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews, 
-         PairList& tideOutput, vector<vector<double>>& COMrecord) {
+printFinalDistr(string outFileName, double time, int itr) {
+    ifstream dataFile(outFileName);
+    string skim, line;
+
+    // Skip file lines until specified time is reached
+    string val1, val2;
+    while (getline(dataFile, skim)) {
+        istringstream entries(skim);
+        entries >> val1 >> val2;
+        if (stoi(val1) == (int)(time) && settings::N == stoi(val2)) break;
+    }
+
+    string distrFileName;
+    if (settings::runs != 1) distrFileName = "Run_" + to_string(itr + 1) + settings::distrOutput;
+    else distrFileName = settings::distrOutput;
+    ofstream distrshotFile(distrFileName);
+
+    string id = "0";
+    string X, Y, Z, VX, VY, VZ, bound;
+    vector<vector<vector<string>>> populations = { {}, {} };
+    while (getline(dataFile, line) && id != to_string(settings::N - 1)) {
+        istringstream entries(line);
+        entries >> id >> X >> Y >> Z >> VX >> VY >> VZ >> bound; 
+        if (bound == "b")
+            populations[0].push_back({ id, X, Y, Z });
+        else if (bound == "u")
+            populations[1].push_back({ id, X, Y, Z });
+        //snapshotFile << line << endl;
+    } 
+    dataFile.close();
+
+    for (int i = 0; i < max(populations[0].size(), populations[1].size()); i++) {
+        if (i < populations[0].size())
+            distrshotFile << populations[0][i][0] << "\t" << populations[0][i][1] << "\t" << populations[0][i][2] << "\t" << populations[0][i][3] << "\t";
+        else
+            distrshotFile << "\t\t\t\t";
+        if (i < populations[1].size())
+            distrshotFile << populations[1][i][0] << "\t" << populations[1][i][1] << "\t" << populations[1][i][2] << "\t" << populations[1][i][3];
+        distrshotFile << endl;
+    }
+    distrshotFile.close();
+}
+
+void
+dataDump(int itr, Galaxy& dsph, int outputCount, DataPoints& skews, 
+         DataPoints& tideOutput, DataPoints& COMrecord, DataPoints& RHalfrecord) {
     if (settings::trackSkews) {
         string skewFileName;
         if (settings::runs != 1) skewFileName = "Run_" + to_string(itr+1) + settings::skewOutput;
 		else skewFileName = settings::skewOutput;
         ofstream skewFile(skewFileName);
-        for (int i = 0; i < skews.size(); i++) skewFile << skews[i][0] << "\t" << skews[i][1] << endl;
+        for (int i = 0; i < skews.size(); i++) skewFile << skews[i][0] << "\t" << skews[i][1] << "\t" << skews[i][2] << endl;
         skewFile.close();
     }
     if (settings::trackTidalR) {
@@ -412,6 +470,7 @@ dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews,
         ofstream tidal(tideFileName);
         tidal << tideOutput[0][0] << endl;
         for (int i = 1; i < tideOutput.size(); i++) tidal << tideOutput[i][0] << "\t" << tideOutput[i][1] << endl;
+        tidal.close();
     }
     if (settings::CenterOfMass) {
         string COMFileName;
@@ -422,6 +481,17 @@ dataDump(int itr, Galaxy& dsph, int outputCount, PairList& skews,
             for (int j = 0; j < 7; j++) COMout << COMrecord[i][j] << "\t";
             COMout << endl;
         }
+        COMout.close();
+    }
+    if (settings::feedback) {
+        string rHalfFileName;
+        if (settings::runs != 1) rHalfFileName = "Run_" + to_string(itr + 1) + settings::rHalfOutput;
+        else rHalfFileName = settings::rHalfOutput;
+        ofstream rHalfOut(rHalfFileName);
+        for (int i = 0; i < RHalfrecord.size(); i++) {
+            rHalfOut << RHalfrecord[i][0] << "\t" << RHalfrecord[i][1] << endl;
+        }
+        rHalfOut.close();
     }
 
     if (settings::run_dispersion) {
@@ -470,21 +540,26 @@ int main(int argc, char* argv[]) {
         // Determine runtime
         double Tmax;
         if (settings::constRuntime) Tmax = settings::TmaxConst;
-        else Tmax = floor(settings::crossings * dsph.getTcross());
-        printInitConds(modelStats, Tmax);
+        else {
+            double t_cr = dsph.getTcross();
+            double crossings = 100 * pow(10, -1.5*(log10(t_cr) - 2)) + 2;
+            Tmax = floor(crossings * dsph.getTcross());
+        }
+        printInitConds(modelStats, Tmax, dsph.getTcross());
 
         // Set up output file and data storage
         string outFileName;
         if (settings::runs != 1) outFileName = "Run_" + to_string(itr + 1) + settings::simOutput;
         else outFileName = settings::simOutput;
         ofstream outFile(outFileName);
-        PairList tideOutput = {};
-        PairList skews = {};
-        vector<vector<double>> COMrecord = {};
+        DataPoints tideOutput = {};
+        DataPoints skews = {};
+        DataPoints COMrecord = {};
+        DataPoints RHalfrecord = {};
         
         // Realtime timer and simulation time
         Timer timer;
-        double time = 0, prevTime = 0;
+        double time = 0;
         output(dsph, outFile, time);  // Output initial positions
         if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
         // cout << "Initial anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
@@ -498,22 +573,19 @@ int main(int argc, char* argv[]) {
             time = minStar.updateStar(dsph.getRHalf(), dsph.getMass(), dsph.getHostDist(), dsph.getHostMass(), dsph.getCOM());
             // Check if output time
             if (time >= outputCount * settings::outputTime) {
+                // Record specified data points
                 if (settings::CenterOfMass) recordCOM(time, dsph, COMrecord);
                 if (settings::trackTidalR) recordTides(time, dsph, tideOutput);
+                if (settings::trackSkews) skews.push_back({ time, dsph.calcSkewness(true), dsph.calcSkewness(false) });
+                if (settings::feedback) recordRHalf(time, dsph, RHalfrecord);
                 output(dsph, outFile, time);
-                if (settings::trackSkews) {
-                    dsph.calcSkewness();
-                    vector<double> pair = { time, dsph.getSkewness() };
-                    skews.push_back(pair);
-                }                
+                             
                 // Check if time to write to console
                 if (timer.elapsed() >= settings::consolePeriod) {
                     consoleWrites++;
-                    cout << "Star " << minStar.getID() << " caused output at t = " << time
-                        << " My   (" << consoleWrites << "/" << (int)(Tmax / (time - prevTime)) << ")"
-                        << "\tElasped Time : " << timer.elapsed() << " s" << endl;
+                    cout << (int)time << " My\t\t" << consoleWrites << "/" << (int)(Tmax / (time / consoleWrites))
+                         << "\t\t" << timer.elapsed() << " s" << endl;
                     timer.reset();
-                    prevTime = time;
                 }
                 outputCount++;
                 // if (outputCount % 50 == 0) cout << "Anisotropy coefficient: " << dsph.calcAnisotropyFactor() << endl;
@@ -522,8 +594,10 @@ int main(int argc, char* argv[]) {
         cout << "Complete! :)" << endl;
         outFile.close();
 
+        if (settings::finalDistr) printFinalDistr(outFileName, time, itr);
+
         // Output all remaining stored data
-        dataDump(itr, dsph, outputCount, skews, tideOutput, COMrecord);
+        dataDump(itr, dsph, outputCount, skews, tideOutput, COMrecord, RHalfrecord);
     }
 }
 /////////////////////////   End of Real Code    ////////////////////////////////

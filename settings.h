@@ -17,15 +17,17 @@ using namespace std;
 namespace settings {
     // Freq Models: "Fornax (new, from Lelli et al.)", "Leo II (new, from Lelli et al.)", "Sculptor", "ToyModel"
     const string modelName = "Fornax (new, from Lelli et al.)";    // Set of characteristics inherited by the galaxy
-    const int N = 100;                       // Number of bodies in the simulation
-    const double TmaxConst = 1000;           // Fixed runtime in My
+    const int N = 5000;                       // Number of bodies in the simulation
+    const double TmaxConst = 2000;           // Fixed runtime in My
     const double minstep = 0.005;            // Minimum length of a timestep (no higher than 0.01)
     const double initStep = minstep;        // Timestep stars are initialized with
     const double outputTime = 1;            // Time between outputs to the data file
     const double consolePeriod = 2.5;          // Seconds of execution time per write (for efficiency)                  
     const double bins = floor(sqrt(N));        // Groups for dispersion profile averages
     const double massPerc = 0.98;           // Mass percent radius defining maximum population range
-    const double runs = 1;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+    const double runs = 5;                  // Number of simulations to run sequentially (currently only works in conjunction w/ g_ratios)
+        const vector<double> log_gi_a0 = { -1.5, -0.5, 0.5, 1.5, 2 };
+        const vector<double> log_ge_a0 = { 1, 0, 0, 0, 0 };
 
     /* Switches
             doubles: off = -1
@@ -38,16 +40,16 @@ namespace settings {
     const bool g_ratios = true;              // overrides provided model and uses standard toy model with given g ratios (fixed M & R_h)
         const double toy_mass = 2e8;         // standard dSph mass for toy model (2 * 10^8 solar masses)
         const double toy_hostR = 1e6;        // standard host distance for toy model (10^6 pc)
+    const bool feedback = false;              // recalculate r_half based on the distribution of bodies each output
     const bool blackHole = false;            // include central blackhole with mass mBlack
         const double mBlack = 1e6;           // mass of central blackhole
-    const bool constRuntime = false;         // fixed (true) or scale dependent (false) runtime
-        const double crossings = 5;		 // number of crossing times used for scale dependent runtime
+    const bool constRuntime = true;         // fixed (true) or scale dependent (false) runtime
     /* Integrated Acceleration:     
     *   0 = gi + ge_star = g_total (orbiting)
     *   1 = g_total - ge_COM       (tidal)    */ 
     const int integ_acc = 1;
     // Data Tracking
-    const bool CenterOfMass = false;          // tracks center of mass
+    const bool CenterOfMass = true;          // tracks center of mass
     const bool trackTidalR = false;          // records pos mag of furthest bound star at every output
     const bool trackSkews = true;            // records skew param at every console output
     const bool freezeStrays = true;          // fixes problematic stars in space with zero velocity
@@ -63,13 +65,17 @@ namespace settings {
     const int axis = 1;                      // Viewing Axis: 1 = x, 2 = y, 3 = z
     const double trunc_dist = -1;            // Distance to Truncate Dispersion & COM 
     // Output Control
-    const string simOutput = "results.txt";
-    const string dispOutput = "disp_dat.txt";
-    const string COM_Output = "centerOmass.txt";
-    const string tidalOutput = "tidalR.txt";
-    const string skewOutput = "skews.txt";
-    const bool run_dispersion = false;
+    const bool run_dispersion = true;
     const bool pos_out = true, vel_out = true, acc_out = false;
+    const bool finalDistr = true;                     // Output file with only last timestep position distribution
+    const string simOutput = "results.txt";         // Default output data file name
+    const string dispOutput = "disp_dat.txt";       // Dispersion data file name
+    const string dispTimeline = "disp_timeline.txt"; // Dispersion timeline data file name
+    const string COM_Output = "centerOmass.txt";    // Center of Mass data file name
+    const string tidalOutput = "tidalR.txt";        // Experimental tidal radius data file name
+    const string skewOutput = "skews.txt";          // Skewness data file name
+    const string distrOutput = "finalDistr.txt";    // Final timestep position distribution data file name
+    const string rHalfOutput = "rhalf.txt";         // r_half data file name
         /* Format Options :
         *   0 = Animation [time N r_half / ID x y z...]
         *   1 = Statistics [ID x y z / ...]

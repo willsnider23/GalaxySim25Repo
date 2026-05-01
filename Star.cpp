@@ -42,7 +42,7 @@ initial_r(double r_half) {
 
     do {
         r = a_s / sqrt(pow(RNG(), (-2.0 / 3.0)) - 1); // from Bob & Alice paper
-    } while (r > r_max);
+    } while (r > r_max || r == 0);
     return r;
 }
 
